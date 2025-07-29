@@ -1,5 +1,5 @@
 <div class="movie-list-container">
-  <div *ngFor="let movie of movies" class="movie-card">
+  <div *ngFor="let movie of movies" class="movie-card" (click)="openMovieDetails(movie.id)" style="cursor: pointer;">
     <img [src]="movie.medium_cover_image" alt="{{ movie.title }}" class="movie-cover">
     <div class="movie-info">
       <h3>{{ movie.title }}</h3>

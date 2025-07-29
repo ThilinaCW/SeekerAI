@@ -1,148 +1,152 @@
-<header>
-  <nav>
-    <div class="logo">Seeker</div>
+<div class="app-container">
+  <header>
+    <nav>
+      <div class="logo">Seeker</div>
+      <div class="search-container">
+        <input type="text" placeholder="Search..." [(ngModel)]="searchKeyword" />
+        <button (click)="applyFilters()">Search</button>
+      </div>
+    </nav>
+  </header>
 
-    <div class="search-container">
-      <input type="text" placeholder="Search..." [(ngModel)]="searchKeyword" />
-      <button (click)="applyFilters()">Search</button>
+  <main>
+    <router-outlet></router-outlet>
+    
+    <div *ngIf="showMovieList" class="movie-list-container">
+      <div class="advanced-search">
+        <div class="search-row">
+          <div class="search-group">
+            <label for="quality">Quality:</label>
+            <select id="quality" [(ngModel)]="selectedQuality">
+              <option value="all" selected>All</option>
+              <option value="720p">720p</option>
+              <option value="1080p">1080p</option>
+              <option value="2160p">2160p</option>
+              <option value="3D">3D</option>
+            </select>
+          </div>
+
+          <div class="search-group">
+            <label for="genre">Genre:</label>
+            <select id="genre" [(ngModel)]="selectedGenre">
+              <option value="all" selected>All</option>
+              <option value="action">Action</option>
+              <option value="adventure">Adventure</option>
+              <option value="animation">Animation</option>
+              <option value="biography">Biography</option>
+              <option value="comedy">Comedy</option>
+              <option value="crime">Crime</option>
+              <option value="documentary">Documentary</option>
+              <option value="drama">Drama</option>
+              <option value="family">Family</option>
+              <option value="fantasy">Fantasy</option>
+              <option value="film-noir">Film-Noir</option>
+              <option value="game-show">Game-Show</option>
+              <option value="history">History</option>
+              <option value="horror">Horror</option>
+              <option value="music">Music</option>
+              <option value="musical">Musical</option>
+              <option value="mystery">Mystery</option>
+              <option value="news">News</option>
+              <option value="reality-tv">Reality-TV</option>
+              <option value="romance">Romance</option>
+              <option value="sci-fi">Sci-Fi</option>
+              <option value="sport">Sport</option>
+              <option value="talk-show">Talk-Show</option>
+              <option value="thriller">Thriller</option>
+              <option value="war">War</option>
+              <option value="western">Western</option>
+            </select>
+          </div>
+
+          <div class="search-group">
+            <label for="year">Year:</label>
+            <select id="year" [(ngModel)]="selectedYear">
+              <option value="all">All</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2020-now">2020-now</option>
+              <option value="2010-now">2010-now</option>
+              <option value="2010-2019">2010-2019</option>
+              <option value="2000-2009">2000-2009</option>
+              <option value="1990-1999">1990-1999</option>
+              <option value="1980-1989">1980-1989</option>
+              <option value="1970-1979">1970-1979</option>
+              <option value="1900-1969">1900-1969</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <div class="search-group">
+            <label for="rating">Rating:</label>
+            <select id="rating" [(ngModel)]="selectedRating">
+              <option value="0">All</option>
+              <option value="9">9+</option>
+              <option value="8">8+</option>
+              <option value="7">7+</option>
+              <option value="6">6+</option>
+              <option value="5">5+</option>
+              <option value="4">4+</option>
+              <option value="3">3+</option>
+              <option value="2">2+</option>
+              <option value="1">1+</option>
+            </select>
+          </div>
+
+          <div class="search-group">
+            <label for="language">Language:</label>
+            <select id="language" [(ngModel)]="selectedLanguage">
+              <option value="all">All</option>
+              <option value="English">English</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Spanish">Spanish</option>
+            </select>
+          </div>
+
+          <div class="search-group">
+            <label for="order-by">Order By:</label>
+            <select id="order-by" [(ngModel)]="selectedOrderBy">
+              <option value="latest">Latest</option>
+              <option value="year">Year</option>
+              <option value="rating">Rating</option>
+              <option value="peers">Peers</option>
+              <option value="seeds">Seeds</option>
+              <option value="download_count">Most Downloads</option>
+              <option value="like_count">Most Likes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="search-term-container">
+          <label for="search-term">Search Term:</label>
+          <input
+            type="text"
+            id="search-term"
+            placeholder="Search..."
+            [(ngModel)]="searchKeyword"
+          />
+        </div>
+
+        <button class="apply-filter-button" (click)="applyFilters()">
+          Apply Filter
+        </button>
+      </div>
+
+      <app-movie-list
+        [qualityFilter]="selectedQuality"
+        [genreFilter]="selectedGenre"
+        [selectedYear]="selectedYear"
+        [ratingFilter]="selectedRating"
+        [selectedLanguage]="selectedLanguage"
+        [orderByFilter]="selectedOrderBy"
+        [searchKeyWord]="searchKeyword"
+        (movieSelected)="onMovieSelected($event)">
+      </app-movie-list>
     </div>
-  </nav>
-</header>
+  </main>
 
-<main>
-  <div class="advanced-search">
-    <div class="search-row">
-      <div class="search-group">
-        <label for="quality">Quality:</label>
-        <select id="quality" [(ngModel)]="selectedQuality">
-          <option value="all" selected>All</option>
-          <option value="720p">720p</option>
-          <option value="1080p">1080p</option>
-          <option value="2160p">2160p</option>
-          <option value="3D">3D</option>
-        </select>
-      </div>
-
-      <div class="search-group">
-        <label for="genre">Genre:</label>
-        <select id="genre" [(ngModel)]="selectedGenre">
-          <option value="all" selected>All</option>
-          <option value="action">Action</option>
-          <option value="adventure">Adventure</option>
-          <option value="animation">Animation</option>
-          <option value="biography">Biography</option>
-          <option value="comedy">Comedy</option>
-          <option value="crime">Crime</option>
-          <option value="documentary">Documentary</option>
-          <option value="drama">Drama</option>
-          <option value="family">Family</option>
-          <option value="fantasy">Fantasy</option>
-          <option value="film-noir">Film-Noir</option>
-          <option value="game-show">Game-Show</option>
-          <option value="history">History</option>
-          <option value="horror">Horror</option>
-          <option value="music">Music</option>
-          <option value="musical">Musical</option>
-          <option value="mystery">Mystery</option>
-          <option value="news">News</option>
-          <option value="reality-tv">Reality-TV</option>
-          <option value="romance">Romance</option>
-          <option value="sci-fi">Sci-Fi</option>
-          <option value="sport">Sport</option>
-          <option value="talk-show">Talk-Show</option>
-          <option value="thriller">Thriller</option>
-          <option value="war">War</option>
-          <option value="western">Western</option>
-        </select>
-      </div>
-
-      <div class="search-group">
-        <label for="year">Year:</label>
-        <select id="year" [(ngModel)]="selectedYear">
-          <option value="all">All</option>
-          <option value="2025">2025</option>
-          <option value="2024">2024</option>
-          <option value="2020-now">2020-now</option>
-          <option value="2010-now">2010-now</option>
-          <option value="2010-2019">2010-2019</option>
-          <option value="2000-2009">2000-2009</option>
-          <option value="1990-1999">1990-1999</option>
-          <option value="1980-1989">1980-1989</option>
-          <option value="1970-1979">1970-1979</option>
-          <option value="1900-1969">1900-1969</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="search-row">
-      <div class="search-group">
-        <label for="rating">Rating:</label>
-        <select id="rating" [(ngModel)]="selectedRating">
-          <option value="0">All</option>
-          <option value="9">9+</option>
-          <option value="8">8+</option>
-          <option value="7">7+</option>
-          <option value="6">6+</option>
-          <option value="5">5+</option>
-          <option value="4">4+</option>
-          <option value="3">3+</option>
-          <option value="2">2+</option>
-          <option value="1">1+</option>
-        </select>
-      </div>
-
-      <div class="search-group">
-        <label for="language">Language:</label>
-        <select id="language" [(ngModel)]="selectedLanguage">
-          <option value="all">All</option>
-          <option value="English">English</option>
-          <option value="Japanese">Japanese</option>
-          <option value="Spanish">Spanish</option>
-          <!-- Add more languages as needed based on YTS.MX data -->
-        </select>
-      </div>
-
-      <div class="search-group">
-        <label for="order-by">Order By:</label>
-        <select id="order-by" [(ngModel)]="selectedOrderBy">
-          <option value="latest">Latest</option>
-                        <option value="year">Year</option>            
-                        <option value="rating">Rating</option>
-                        <option value="peers">Peers</option>
-                        <option value="seeds">Seeds</option>
-                        <option value="download_count">Most Downloads</option>
-                        <option value="like_count">Most Likes</option>  
-        </select>
-      </div>
-    </div>
-
-    <div class="search-term-container">
-      <label for="search-term">Search Term:</label>
-      <input
-        type="text"
-        id="search-term"
-        placeholder="Search..."
-        [(ngModel)]="searchKeyword"
-      />
-    </div>
-
-    <button class="apply-filter-button" (click)="applyFilters()">
-      Apply Filter
-    </button>
-  </div>
-
-  <app-movie-list
-    [qualityFilter]="selectedQuality"
-    [genreFilter]="selectedGenre"
-    [selectedYear]="selectedYear"
-    [ratingFilter]="selectedRating"
-    [selectedLanguage]="selectedLanguage"
-    [orderByFilter]="selectedOrderBy"
-    [searchKeyWord]="searchKeyword"
-  >
-  </app-movie-list>
-</main>
-
-<footer>
-  <p>&copy; 2024 Seeker. All rights reserved.</p>
-</footer>
+  <footer>
+    <p>&copy; 2024 Seeker. All rights reserved.</p>
+  </footer>
+</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { YtsApiService } from '../../services/yts-api.service';
 
 export interface Movie {
@@ -29,8 +29,9 @@ export class MovieListComponent implements OnInit {
   @Input() ratingFilter: number = 0;
   @Input() orderByFilter: string = 'latest';
   @Input() searchKeyWord: string = '';
-  @Input() selectedYear: string = 'All'; // Add this line
-  @Input() selectedLanguage: string = 'All'; // Add this line
+  @Input() selectedYear: string = 'All';
+  @Input() selectedLanguage: string = 'All';
+  @Output() movieSelected = new EventEmitter<number>();
 
   constructor(private ytsApiService: YtsApiService) { }
 
@@ -104,4 +105,10 @@ export class MovieListComponent implements OnInit {
     }
     return pages;
   }
+  openMovieDetails(movieId: number): void {
+    // Emit the selected movie ID to parent component
+    this.movieSelected.emit(movieId);
+  }
 }
+
+

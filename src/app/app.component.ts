@@ -1,5 +1,7 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { MovieListComponent } from './components/movie-list/movie-list.component';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -12,17 +14,24 @@ export class AppComponent implements OnInit {
   @ViewChild(MovieListComponent)
   private movieListComponent!: MovieListComponent;
 
-  // Filter properties (mirroring YTS.MX defaults initially)
+  // Filter properties
   selectedQuality: string = 'all';
   selectedGenre: string = 'all';
-  selectedYear: string = 'all';
+  selectedYear: string = 'All';
   selectedRating: number = 0;
-  selectedLanguage: string = 'English'; // Default language from YTS.MX homepage
+  selectedLanguage: string = 'English';
   selectedOrderBy: string = 'latest';
   searchKeyword: string = '';
+  showMovieList: boolean = true;
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Initial load will be handled by movieListComponent's ngOnInit
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.showMovieList = event.url === '/' || event.url === '';
+    });
   }
 
   applyFilters(): void {
@@ -32,11 +41,14 @@ export class AppComponent implements OnInit {
       this.movieListComponent.ratingFilter = this.selectedRating;
       this.movieListComponent.orderByFilter = this.selectedOrderBy;
       this.movieListComponent.searchKeyWord = this.searchKeyword;
-      // Since 'year' and 'language' are new filters, we need to add them to movieListComponent
-      // For now, let's just make sure the core filters are passed.
-
-      this.movieListComponent.pageNumber = 1; // Reset to first page on new search
+      this.movieListComponent.selectedYear = this.selectedYear;
+      this.movieListComponent.selectedLanguage = this.selectedLanguage;
+      this.movieListComponent.pageNumber = 1;
       this.movieListComponent.loadMovies();
     }
+  }
+
+  onMovieSelected(movieId: number): void {
+    this.router.navigate(['/movie', movieId]);
   }
 }
