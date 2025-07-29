@@ -1,0 +1,20 @@
+<div class="movie-list-container">
+  <div *ngFor="let movie of movies" class="movie-card">
+    <img [src]="movie.medium_cover_image" alt="{{ movie.title }}" class="movie-cover">
+    <div class="movie-info">
+      <h3>{{ movie.title }}</h3>
+      <p>{{ movie.year }}</p>
+      <p class="movie-rating">Rating: {{ movie.rating }}</p>
+      <p class="movie-genres">{{ movie.genres.join(', ') }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="pagination">
+  <button (click)="prevPage()" [disabled]="pageNumber === 1">Previous</button>
+  <ng-container *ngFor="let page of getPagesArray()">
+    <button (click)="goToPage(page)" [class.active]="pageNumber === page">{{ page }}</button>
+  </ng-container>
+  <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+  <span class="page-info">Page {{ pageNumber }} of {{ totalPages }}</span>
+</div>

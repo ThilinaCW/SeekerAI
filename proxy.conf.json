@@ -1,0 +1,10 @@
+{
+  "/api/v2": {
+    "target": "https://yts.mx",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api/v2": "/api/v2"
+    }
+  }
+} 
