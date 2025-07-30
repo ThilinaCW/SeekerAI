@@ -192,6 +192,7 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   onSearch(): void {
+    debugger
     const query = this.searchKeyword.trim();
     if (query) {
       this.showSearchResults = true;
