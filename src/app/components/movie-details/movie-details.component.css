@@ -213,26 +213,78 @@
   color: #f1c40f;
 }
 
-/* Genres */
+/* Genres Section */
+.movie-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.genre-tag {
+  display: inline-block;
+  background: rgba(245, 197, 24, 0.1);
+  color: #f5c518;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  border: 1px solid rgba(245, 197, 24, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.genre-tag::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(245, 197, 24, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.genre-tag:hover {
+  background: rgba(245, 197, 24, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 197, 24, 0.15);
+  border-color: rgba(245, 197, 24, 0.5);
+}
+
+.genre-tag:hover::before {
+  opacity: 1;
+}
+
+/* Movie Meta - Updated to separate from genres */
 .movie-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  margin: 0 0 20px;
+  margin: 0 0 10px;
   color: rgba(255, 255, 255, 0.8);
   font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.3px;
+  align-items: center;
 }
 
-.movie-meta span {
+.movie-meta > span {
   display: inline-flex;
   align-items: center;
   position: relative;
   padding-right: 16px;
 }
 
-.movie-meta span:not(:last-child)::after {
+.movie-meta > span:not(:last-child)::after {
   content: '•';
   position: absolute;
   right: 2px;
@@ -252,6 +304,12 @@
   color: #fff;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+}
+
+.movie-meta .mpa-rating:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .movie-synopsis {
