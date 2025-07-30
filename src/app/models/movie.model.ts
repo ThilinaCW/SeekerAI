@@ -42,6 +42,10 @@ export interface Movie {
   episodes?: any[];
   suggestions?: Movie[];
   similar_movies?: Movie[];
+  medium_screenshot_image1?: string;
+  medium_screenshot_image2?: string;
+  medium_screenshot_image3?: string;
+  medium_screenshot_image4?: string;
 }
 
 export interface Torrent {

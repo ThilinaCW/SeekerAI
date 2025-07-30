@@ -60,6 +60,10 @@ export class MovieDetailsComponent implements OnInit {
   isDownloadsDrawerOpen = false;
   searchKeyword = '';
   showSearchResults = false;
+  
+  // Screenshot slideshow properties
+  currentScreenshotIndex = 0;
+  private _screenshots: string[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -84,6 +88,54 @@ export class MovieDetailsComponent implements OnInit {
         this.loadMovieDetails(+id);
       }
     });
+  }
+
+  // Get all available screenshots from the movie object
+  getScreenshots(): string[] {
+    if (this._screenshots.length === 0 && this.movie) {
+      // Filter out any undefined screenshot URLs
+      this._screenshots = [
+        this.movie.medium_screenshot_image1,
+        this.movie.medium_screenshot_image2,
+        this.movie.medium_screenshot_image3,
+        this.movie.medium_screenshot_image4
+      ].filter(Boolean) as string[];
+    }
+    return this._screenshots;
+  }
+
+  // Check if there are any screenshots available
+  hasScreenshots(): boolean {
+    return this.getScreenshots().length > 0;
+  }
+
+  // Get the current screenshot URL
+  getCurrentScreenshot(): string | null {
+    const screenshots = this.getScreenshots();
+    return screenshots[this.currentScreenshotIndex] || null;
+  }
+
+  // Navigate to the next screenshot
+  nextScreenshot(): void {
+    const screenshots = this.getScreenshots();
+    if (this.currentScreenshotIndex < screenshots.length - 1) {
+      this.currentScreenshotIndex++;
+    }
+  }
+
+  // Navigate to the previous screenshot
+  prevScreenshot(): void {
+    if (this.currentScreenshotIndex > 0) {
+      this.currentScreenshotIndex--;
+    }
+  }
+
+  // Go to a specific screenshot by index
+  goToScreenshot(index: number): void {
+    const screenshots = this.getScreenshots();
+    if (index >= 0 && index < screenshots.length) {
+      this.currentScreenshotIndex = index;
+    }
   }
 
   private loadMovieDetails(movieId: number): void {
