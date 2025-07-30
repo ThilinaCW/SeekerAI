@@ -142,33 +142,33 @@ export class MovieListComponent implements OnInit {
     this.error = null;
 
     // Define the base parameters with proper typing
-    const baseParams = {
+    const baseParams: any = {
       page: this._pageNumber,
       limit: this._pageSize,
       quality: this._qualityFilter !== 'all' ? this._qualityFilter : undefined,
       genre: this._genreFilter !== 'all' ? this._genreFilter : undefined,
-      minimum_rating: this._ratingFilter || undefined,
+      minimum_rating: this._ratingFilter > 0 ? this._ratingFilter : undefined,
       query_term: this._searchKeyWord || undefined,
       order_by: this._orderByFilter,
-      sort_by: 'desc' as const,
-      with_rt_ratings: true as const
+      sort_by: 'desc',
+      with_rt_ratings: true
     };
 
-    // Create a new object with the base parameters
+    // Create a new object with only defined parameters
     const params: Record<string, any> = { ...baseParams };
 
     // Add year filter if specified
-    if (this._selectedYear !== 'all') {
+    if (this._selectedYear && this._selectedYear !== 'all') {
       params['year'] = this._selectedYear;
     }
 
     // Add language filter if specified
-    if (this._selectedLanguage !== 'all') {
+    if (this._selectedLanguage && this._selectedLanguage !== 'all') {
       params['language'] = this._selectedLanguage.toLowerCase();
     }
 
     this.ytsApiService.getMovies(params).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response?.data?.movies) {
           this.movies = response.data.movies;
           this.totalMovies = response.data.movie_count;
@@ -180,10 +180,13 @@ export class MovieListComponent implements OnInit {
         }
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading movies:', err);
         this.error = 'Failed to load movies. Please try again later.';
         this.loading = false;
+        this.movies = [];
+        this.totalMovies = 0;
+        this.totalPages = 0;
       }
     });
   }

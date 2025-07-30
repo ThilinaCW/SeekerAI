@@ -25,6 +25,15 @@ import { Torrent } from '../../models/movie.model';
     MovieListComponent
   ],
   animations: [
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0 }))
+      ])
+    ]),
     trigger('fadeInOut', [
       state('void', style({ opacity: 0 })),
       transition(':enter, :leave', [
