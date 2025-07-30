@@ -1,55 +1,202 @@
-<div class="movie-details-container" *ngIf="!loading && !error && movie" @fadeIn>
-  <div class="movie-header">
-    <div class="movie-poster">
-      <img [src]="movie.large_cover_image || movie.medium_cover_image" [alt]="movie.title + ' poster'" class="movie-poster-img">
-    </div>
-    <div class="movie-info">
-      <h1 class="movie-title">{{ movie.title }} ({{ movie.year }})</h1>
-      
-      <div class="movie-rating" *ngIf="movie.rating">
-        <span class="rating-value">{{ movie.rating }}/10</span>
-        <div class="rating-stars">
-          <span *ngFor="let star of [1,2,3,4,5]" 
-                [class.filled]="star <= (movie.rating / 2)">
-            ★
-          </span>
-        </div>
-      </div>
-
-      <div class="movie-genres" *ngIf="movie.genres && movie.genres.length > 0">
-        <span class="genre-tag" *ngFor="let genre of movie.genres">{{ genre }}</span>
-      </div>
+<div class="yts-movie-details" *ngIf="!loading && !error && movie" @fadeIn>
+  <!-- Search Bar -->
+  <div class="search-bar-container">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchKeyword" 
+        (keyup.enter)="onSearch()"
+        placeholder="Search for movies..."
+        class="search-input"
+      >
+      <button (click)="onSearch()" class="search-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
     </div>
   </div>
 
-  <div class="movie-content">
-    <div class="movie-description" *ngIf="movie.description_full">
-      <h2>Synopsis</h2>
-      <p>{{ movie.description_full }}</p>
+  <!-- Header Section -->
+  <div class="movie-header" [style.background-image]="'url(' + movie.background_image_original + ')'">
+    <div class="header-overlay"></div>
+    <div class="container">
+      <div class="movie-header-content">
+        <div class="movie-poster">
+          <img [src]="movie.large_cover_image" [alt]="movie.title + ' poster'" class="movie-poster-img">
+          <div class="movie-actions">
+            <button (click)="toggleDownloadsDrawer()" class="btn-download">
+              <i class="icon-download"></i> Download
+            </button>
+          
+          </div>
+        </div>
+        
+        <div class="movie-info">
+          <h1 class="movie-title">{{ movie.title_long || movie.title }}</h1>
+          
+          <div class="movie-meta">
+            <span class="year">{{ movie.year }}</span>
+            <span class="mpa-rating" *ngIf="movie.mpa_rating">{{ movie.mpa_rating }}</span>
+            <span class="runtime" *ngIf="movie.runtime">{{ movie.runtime }} min</span>
+          </div>
+          
+          <div class="movie-ratings">
+            <div class="rating" *ngIf="movie.rating">
+              <span class="rating-value">{{ movie.rating }}</span>
+              <div class="rating-stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      [class.filled]="star <= (movie.rating / 2)">
+                  ★
+                </span>
+              </div>
+              <span class="rating-count">({{ movie.like_count || 0 }} votes)</span>
+            </div>
+            
+            <div class="download-count" *ngIf="movie.download_count">
+              <i class="icon-download"></i>
+              <span>{{ movie.download_count | number }} downloads</span>
+            </div>
+          </div>
+          
+          <div class="movie-genres" *ngIf="movie.genres && movie.genres.length > 0">
+            <span class="genre-tag" *ngFor="let genre of movie.genres">{{ genre }}</span>
+          </div>
+          
+          <div class="movie-synopsis" *ngIf="movie.description_full || movie.description_intro">
+            <h3>Synopsis</h3>
+            <div [innerHTML]="(showFullDescription ? (movie.description_full || movie.description_intro) : truncatedDescription) | safeHtml"></div>
+            <div class="read-more" *ngIf="movie.description_full && movie.description_full.length > 300">
+              <button (click)="toggleDescription()" class="btn-read-more">
+                {{ showFullDescription ? 'Read Less' : 'Read More' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+  
+  <!-- Main Content -->
+  <!-- Download Button -->
+  <!-- <div class="download-button-container">
+    <button (click)="toggleDownloadsDrawer()" class="btn-download-main">
+      <i class="icon-download"></i> Download Options
+    </button>
+  </div> -->
 
-    <div class="movie-trailer" *ngIf="movie.yt_trailer_code">
-      <h2>Trailer</h2>
-      <div class="trailer-container">
-        <iframe 
-          width="100%" 
-          height="500" 
-          [src]="getTrailerUrl(movie.yt_trailer_code) | safeUrl: 'resourceUrl'" 
-          frameborder="0" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen>
-        </iframe>
+  <div class="container">
+    <div class="movie-content">
+      <!-- Left Column -->
+      <div class="left-column">
+        
+        <!-- Trailer Section -->
+        <div class="trailer-section" *ngIf="movie.yt_trailer_code">
+          <h2>Trailer</h2>
+          <div class="trailer-container">
+            <iframe 
+              width="100%" 
+              height="450"
+              [src]="getTrailerUrl(movie.yt_trailer_code) | safeUrl: 'resourceUrl'" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column -->
+      <div class="right-column">
+        <!-- Movie Info -->
+        <div class="info-box">
+          <h3>Movie Info</h3>
+          <ul class="info-list">
+            <li *ngIf="movie.year">
+              <span class="info-label">Year:</span>
+              <span class="info-value">{{ movie.year }}</span>
+            </li>
+            <li *ngIf="movie.runtime">
+              <span class="info-label">Duration:</span>
+              <span class="info-value">{{ movie.runtime }} min</span>
+            </li>
+            <li *ngIf="movie.genres && movie.genres.length > 0">
+              <span class="info-label">Genre:</span>
+              <span class="info-value">{{ movie.genres.join(', ') }}</span>
+            </li>
+            <li *ngIf="movie.language">
+              <span class="info-label">Language:</span>
+              <span class="info-value">{{ movie.language }}</span>
+            </li>
+            <li *ngIf="movie.mpa_rating">
+              <span class="info-label">MPA Rating:</span>
+              <span class="info-value">{{ movie.mpa_rating }}</span>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Cast -->
+        <div class="cast-section" *ngIf="movie.cast && movie.cast.length > 0">
+          <h3>Cast</h3>
+          <div class="cast-grid">
+            <div class="cast-member" *ngFor="let person of movie.cast">
+              <div class="cast-image" [style.background-image]="'url(' + (person.url_small_image || 'assets/images/placeholder-avatar.png') + ')'"></div>
+              <div class="cast-info">
+                <div class="cast-name">{{ person.name }}</div>
+                <div class="cast-character">{{ person.character_name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Download Drawer -->
+<div class="downloads-drawer" [class.active]="isDownloadsDrawerOpen">
+  <div class="drawer-overlay" (click)="toggleDownloadsDrawer()"></div>
+  <div class="drawer-content">
+    <div class="drawer-header">
+      <h3>Download Options</h3>
+      <button class="drawer-close" (click)="toggleDownloadsDrawer()">
+        <i class="icon-close"></i>
+      </button>
+    </div>
+    <div class="downloads-list">
+      <div class="download-item" *ngFor="let torrent of movie?.torrents">
+        <div class="download-info">
+          <div class="download-quality">{{ torrent.quality }}</div>
+          <div class="download-details">
+            <span class="download-size">{{ torrent.size }}</span>
+            <span class="download-seeds">{{ torrent.seeds }} seeds</span>
+          </div>
+        </div>
+        <div class="download-actions">
+          <a [href]="torrent.url" class="btn-download" download (click)="$event.stopPropagation()">
+            <i class="icon-download"></i> Download
+          </a>
+          <button class="btn-copy" (click)="copyMagnetLink(torrent.hash)" title="Copy Magnet Link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
 <div class="loading-spinner" *ngIf="loading">
   <div class="spinner"></div>
   <p>Loading movie details...</p>
 </div>
 
-<div class="error-message" *ngIf="error && !loading">
-  <p>{{ error }}</p>
+<!-- Error State -->
+<div class="error-message" *ngIf="error">
+  <p>Error loading movie details. Please try again later.</p>
   <button class="back-button" (click)="goBack()">Go Back</button>
 </div>

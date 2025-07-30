@@ -49,6 +49,8 @@ export class AppComponent implements OnInit {
   }
 
   onMovieSelected(movieId: number): void {
-    this.router.navigate(['/movie', movieId]);
+    // Open in a new tab
+    const url = this.router.createUrlTree(['/movie', movieId]).toString();
+    window.open(url, '_blank');
   }
 }
