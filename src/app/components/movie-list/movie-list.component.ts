@@ -71,6 +71,7 @@ export class MovieListComponent implements OnInit {
   get orderByFilter(): string { return this._orderByFilter; }
 
   @Input() set selectedYear(value: string) { 
+    debugger
     this._selectedYear = value || 'all'; 
     this.checkAndReload();
   }
@@ -157,9 +158,30 @@ export class MovieListComponent implements OnInit {
     // Create a new object with only defined parameters
     const params: Record<string, any> = { ...baseParams };
 
-    // Add year filter if specified
+    // Handle year filter - support for ranges like '2020-now' or '2010-2019'
     if (this._selectedYear && this._selectedYear !== 'all') {
-      params['year'] = this._selectedYear;
+      const currentYear = new Date().getFullYear();
+      
+      if (this._selectedYear.includes('-')) {
+        const [startYear, endYear] = this._selectedYear.split('-');
+        const start = parseInt(startYear, 10);
+        let end = endYear === 'now' ? currentYear : parseInt(endYear, 10);
+        
+        // For ranges, we'll use the minimum_rating parameter to filter by year
+        // This is a workaround since YTS API doesn't natively support year ranges
+        // We'll set a reasonable range that's likely to include the desired movies
+        if (!isNaN(start)) {
+          params['minimum_rating'] = 0; // Reset any previous rating filter
+          // We'll use the query_term to search for movies in the specified range
+          // This is a best-effort approach since YTS API has limited filtering
+          params['query_term'] = (params['query_term'] || '') + 
+            (params['query_term'] ? ' ' : '') + 
+            `year:${start}-${end}`;
+        }
+      } else if (!isNaN(parseInt(this._selectedYear, 10))) {
+        // Single year selection
+        params['year'] = this._selectedYear;
+      }
     }
 
     // Add language filter if specified

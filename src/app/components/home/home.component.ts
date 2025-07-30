@@ -48,5 +48,14 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // Generate an array of years from start to end (inclusive)
+  getYearRange(start: number, end: number): number[] {
+    const years: number[] = [];
+    for (let year = start; year >= end; year--) {
+      years.push(year);
+    }
+    return years;
+  }
+
 
 }
