@@ -1,72 +1,69 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-export interface Movie {
-  id: number;
-  title: string;
-  year: number;
-  rating: number;
-  genres: string[];
-  medium_cover_image: string;
-}
-
-export interface MoviesResponse {
-  data: {
-    movie_count: number;
-    movies: Movie[];
-  };
-  status: string;
-  status_message: string;
-}
-
-function removeDuplicates(movies: Movie[]): Movie[] {
-  const unique = new Map<number, Movie>();
-  movies.forEach(movie => {
-    if (!unique.has(movie.id)) {
-      unique.set(movie.id, movie);
-    }
-  });
-  return Array.from(unique.values());
-}
+import { Movie, MovieListResponse } from '../models/movie.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class YtsApiService {
+  private readonly baseUrl = 'https://yts.mx/api/v2';
 
-  private baseUrl = 'https://yts.mx';
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
+  getMovies(params: {
+    page?: number;
+    limit?: number;
+    quality?: string;
+    genre?: string;
+    minimum_rating?: number;
+    query_term?: string;
+    order_by?: string;
+    sort_by?: string;
+    with_rt_ratings?: boolean;
+    year?: string;
+    language?: string;
+  }): Observable<MovieListResponse> {
+    // Convert parameters to HttpParams for better URL handling
+    let httpParams = new HttpParams();
+    
+    // Add only defined parameters
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, value.toString());
+      }
+    });
 
-  GetTimeLineMoviesList(pageNumber: number, limit: number, qualityFilter: string, genreFilter: string, ratingFilter: number, orderByFilter: string, searchKeyWord: string, yearFilter: string, languageFilter: string) {
-    if (searchKeyWord == '') {
-      searchKeyWord = '0';
-    }
-    var endpointUrl = `${this.baseUrl}/api/v2/list_movies.json?page=${pageNumber}&limit=${limit}&quality=${qualityFilter}&genre=${genreFilter}&minimum_rating=${ratingFilter}&sort_by=${orderByFilter}&query_term=${searchKeyWord}&year=${yearFilter}&language=${languageFilter}`;
-    return this.http.get<MoviesResponse>(endpointUrl).pipe(
-      map(response => {
-        if (response.data?.movies) {
-          response.data.movies = removeDuplicates(response.data.movies);
-        }
-        return response;
-      })
-    );
+    // Set default values if not provided
+    if (!httpParams.has('page')) httpParams = httpParams.set('page', '1');
+    if (!httpParams.has('limit')) httpParams = httpParams.set('limit', '20');
+    if (!httpParams.has('sort_by')) httpParams = httpParams.set('sort_by', 'desc');
+    if (!httpParams.has('order_by')) httpParams = httpParams.set('order_by', 'date_added');
+    if (!httpParams.has('with_rt_ratings')) httpParams = httpParams.set('with_rt_ratings', 'true');
+
+    return this.http.get<MovieListResponse>(`${this.baseUrl}/list_movies.json`, { params: httpParams })
+      .pipe(
+        map(response => {
+          // Ensure we always have a data object
+          if (!response.data) {
+            response.data = { movie_count: 0, limit: 20, page_number: 1, movies: [] };
+          }
+          return response;
+        })
+      );
   }
 
-  GetMovieSuggestions(movieId: number) {
-    var endpointUrl = `${this.baseUrl}/api/v2/movie_suggestions.json?movie_id=${movieId}`;
-    return this.http.get<MoviesResponse>(endpointUrl).pipe(
-      map(response => {
-        if (response.data?.movies) {
-          response.data.movies = removeDuplicates(response.data.movies);
-        }
-        return response;
-      })
-    );
-  }
+  getMovieDetails(movieId: number, withImages = true, withCast = true): Observable<{ data: { movie: Movie } }> {
+    let params = new HttpParams()
+      .set('movie_id', movieId.toString())
+      .set('with_images', withImages.toString())
+      .set('with_cast', withCast.toString());
 
-  GetMovieDetails(movieId: number) {
+    return this.http.get<{ data: { movie: Movie } }>(
+      `${this.baseUrl}/movie_details.json`,
+      { params }
+    );
     var endpointUrl = `${this.baseUrl}/api/v2/movie_details.json?movie_id=${movieId}&with_images=true&with_cast=true`;
     return this.http.get<any>(endpointUrl);
   }

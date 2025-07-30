@@ -3,58 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
 import { YtsApiService } from '../../services/yts-api.service';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { Movie, Torrent } from '../../models/movie.model';
 import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
-import { fadeInAnimation } from '../../animations/fade.animation';
 import { filter } from 'rxjs/operators';
-
-interface Torrent {
-  url: string;
-  hash: string;
-  quality: string;
-  type: string;
-  seeds: number;
-  peers: number;
-  size: string;
-  size_bytes: number;
-  date_uploaded: string;
-  date_uploaded_unix: number;
-}
-
-interface MovieDetails {
-  id: number;
-  url: string;
-  imdb_code: string;
-  title: string;
-  title_english: string;
-  title_long: string;
-  slug: string;
-  year: number;
-  rating: number;
-  runtime: number;
-  genres: string[];
-  download_count: number;
-  like_count: number;
-  description_intro: string;
-  description_full: string;
-  yt_trailer_code: string;
-  language: string;
-  mpa_rating: string;
-  background_image: string;
-  background_image_original: string;
-  small_cover_image: string;
-  medium_cover_image: string;
-  large_cover_image: string;
-  torrents: Torrent[];
-  date_uploaded: string;
-  date_uploaded_unix: number;
-  cast: Array<{
-    name: string;
-    character_name: string;
-    imdb_code: string;
-    url_small_image: string;
-  }>;
-}
 
 @Component({
   selector: 'app-movie-details',
@@ -68,11 +21,26 @@ interface MovieDetails {
     SafeHtmlPipe, 
     FormsModule
   ],
-  animations: [fadeInAnimation],
-  host: { '[@fadeIn]': '' }
+  animations: [
+    trigger('fadeInOut', [
+      state('void', style({ opacity: 0 })),
+      transition(':enter, :leave', [
+        animate(300, style({ opacity: 1 }))
+      ])
+    ]),
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ transform: 'translateY(100%)' }),
+        animate('300ms ease-in', style({ transform: 'translateY(0%)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ transform: 'translateY(100%)' }))
+      ])
+    ])
+  ]
 })
 export class MovieDetailsComponent implements OnInit {
-  movie: MovieDetails | null = null;
+  movie: Movie | null = null;
   loading = true;
   error: string | null = null;
   showFullDescription = false;
@@ -97,34 +65,26 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      const movieId = +params['id'];
-      if (movieId) {
-        this.loadMovieDetails(movieId);
-      } else {
-        this.error = 'No movie ID provided';
-        this.loading = false;
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.loadMovieDetails(+id);
       }
     });
   }
 
   private loadMovieDetails(movieId: number): void {
     this.loading = true;
-    this.error = null;
-
-    console.log('Loading movie details for ID:', movieId);
-    
-    this.ytsApiService.GetMovieDetails(movieId).subscribe({
+    this.ytsApiService.getMovieDetails(movieId).subscribe({
       next: (response) => {
-        console.log('Movie details response:', response);
         if (response?.data?.movie) {
           this.movie = this.processMovieData(response.data.movie);
         } else {
-          this.error = 'No movie details found';
+          this.error = 'Movie details not found';
         }
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error loading movie details:', err);
         this.error = 'Failed to load movie details. Please try again later.';
         this.loading = false;
@@ -135,9 +95,9 @@ export class MovieDetailsComponent implements OnInit {
   /**
    * Process and enhance movie data before displaying
    */
-  private processMovieData(movie: any): MovieDetails {
+  private processMovieData(movie: Movie): Movie {
     // Process and enhance the movie data before displaying
-    const processedMovie = {
+    const processedMovie: Movie = {
       ...movie,
       // Ensure arrays are always defined
       genres: movie.genres || [],
@@ -165,15 +125,17 @@ export class MovieDetailsComponent implements OnInit {
     
     // Format runtime if available
     if (movie.runtime) {
-      movie.runtime = parseInt(movie.runtime, 10) || 0;
+      processedMovie.runtime = typeof movie.runtime === 'string' 
+        ? parseInt(movie.runtime, 10) 
+        : movie.runtime;
     }
     
-    // Ensure rating is a number
+    // Ensure rating is a number and properly formatted
     if (movie.rating) {
-      movie.rating = parseFloat(movie.rating.toFixed(1));
+      processedMovie.rating = parseFloat(movie.rating.toFixed(1));
     }
     
-    return movie as MovieDetails;
+    return processedMovie;
   }
 
   /**
@@ -214,11 +176,16 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   onSearch(): void {
-    if (this.searchKeyword.trim()) {
+    const query = this.searchKeyword.trim();
+    if (query) {
       // Navigate to home with search query
       this.router.navigate(['/'], { 
-        queryParams: { q: this.searchKeyword },
-        state: { searchTerm: this.searchKeyword }
+        queryParams: { q: query },
+        state: { searchTerm: query }
+      }).catch(error => {
+        console.error('Navigation error:', error);
+        // Fallback to window.location if router navigation fails
+        window.location.href = `/?q=${encodeURIComponent(query)}`;
       });
     }
   }

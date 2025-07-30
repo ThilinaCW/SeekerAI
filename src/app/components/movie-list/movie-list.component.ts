@@ -1,15 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { YtsApiService } from '../../services/yts-api.service';
-
-export interface Movie {
-  id: number;
-  title: string;
-  year: number;
-  rating: number;
-  genres: string[];
-  medium_cover_image: string;
-  // Add other properties you might need from the API response
-}
+import { Movie } from '../../models/movie.model';
 
 @Component({
   selector: 'app-movie-list',
@@ -18,20 +9,86 @@ export interface Movie {
 })
 export class MovieListComponent implements OnInit {
   movies: Movie[] = [];
+  loading: boolean = false;
+  error: string | null = null;
+  currentPage: number = 1;
   totalMovies: number = 0;
   totalPages: number = 0;
 
-  // Search parameters, now as @Input()
-  @Input() pageNumber: number = 1;
-  @Input() pageSize: number = 20;
-  @Input() qualityFilter: string = 'all';
-  @Input() genreFilter: string = 'all';
-  @Input() ratingFilter: number = 0;
-  @Input() orderByFilter: string = 'latest';
-  @Input() searchKeyWord: string = '';
-  @Input() selectedYear: string = 'All';
-  @Input() selectedLanguage: string = 'All';
+  // Private properties with default values
+  private _pageNumber: number = 1;
+  private _pageSize: number = 20;
+  private _qualityFilter: string = 'all';
+  private _genreFilter: string = 'all';
+  private _ratingFilter: number = 0;
+  private _orderByFilter: string = 'latest';
+  private _selectedYear: string = 'All';
+  private _selectedLanguage: string = 'All';
+  private _searchKeyWord: string = '';
+  private _previousSearchKeyWord: string = '';
+  private _previousFilters = {
+    quality: 'all',
+    genre: 'all',
+    rating: 0,
+    orderBy: 'latest',
+    year: 'All',
+    language: 'All'
+  };
+
   @Output() movieSelected = new EventEmitter<number>();
+
+  @Input() set pageNumber(value: number) { this._pageNumber = value; }
+  get pageNumber(): number { return this._pageNumber; }
+
+  @Input() set pageSize(value: number) { this._pageSize = value; }
+  get pageSize(): number { return this._pageSize; }
+
+  @Input() set qualityFilter(value: string) { 
+    this._qualityFilter = value || 'all'; 
+    this.checkAndReload();
+  }
+  get qualityFilter(): string { return this._qualityFilter; }
+
+  @Input() set genreFilter(value: string) { 
+    this._genreFilter = value || 'all'; 
+    this.checkAndReload();
+  }
+  get genreFilter(): string { return this._genreFilter; }
+
+  @Input() set ratingFilter(value: number) { 
+    this._ratingFilter = value || 0; 
+    this.checkAndReload();
+  }
+  get ratingFilter(): number { return this._ratingFilter; }
+
+  @Input() set orderByFilter(value: string) { 
+    this._orderByFilter = value || 'latest'; 
+    this.checkAndReload();
+  }
+  get orderByFilter(): string { return this._orderByFilter; }
+
+  @Input() set selectedYear(value: string) { 
+    this._selectedYear = value || 'All'; 
+    this.checkAndReload();
+  }
+  get selectedYear(): string { return this._selectedYear; }
+
+  @Input() set selectedLanguage(value: string) { 
+    this._selectedLanguage = value || 'All'; 
+    this.checkAndReload();
+  }
+  get selectedLanguage(): string { return this._selectedLanguage; }
+
+  @Input() set searchKeyWord(value: string) {
+    const newValue = value || '';
+    if (this._searchKeyWord !== newValue) {
+      this._searchKeyWord = newValue;
+      this.checkAndReload();
+    }
+  }
+  get searchKeyWord(): string { 
+    return this._searchKeyWord; 
+  }
 
   constructor(private ytsApiService: YtsApiService) { }
 
@@ -39,58 +96,120 @@ export class MovieListComponent implements OnInit {
     this.loadMovies();
   }
 
+  private checkAndReload(): void {
+    // Only reload if the search keyword or filters have changed
+    if (this._searchKeyWord !== this._previousSearchKeyWord || 
+        this._previousFilters.quality !== this._qualityFilter ||
+        this._previousFilters.genre !== this._genreFilter ||
+        this._previousFilters.rating !== this._ratingFilter ||
+        this._previousFilters.orderBy !== this._orderByFilter ||
+        this._previousFilters.year !== this._selectedYear ||
+        this._previousFilters.language !== this._selectedLanguage) {
+      
+      this._previousSearchKeyWord = this._searchKeyWord;
+      this._previousFilters = {
+        quality: this._qualityFilter,
+        genre: this._genreFilter,
+        rating: this._ratingFilter,
+        orderBy: this._orderByFilter,
+        year: this._selectedYear,
+        language: this._selectedLanguage
+      };
+      
+      this._pageNumber = 1; // Reset to first page on new search/filter
+      this.loadMovies();
+    }
+  }
+
   loadMovies(): void {
-    this.ytsApiService.GetTimeLineMoviesList(
-      this.pageNumber,
-      this.pageSize,
-      this.qualityFilter,
-      this.genreFilter,
-      this.ratingFilter,
-      this.orderByFilter,
-      this.searchKeyWord,
-      this.selectedYear, // Pass selectedYear
-      this.selectedLanguage // Pass selectedLanguage
-    ).subscribe(
-      (data) => {
-        console.log('Full API Response:', data);
-        if (data && data.data && data.data.movies) {
-          console.log('Movies array from API:', data.data.movies);
-          this.movies = data.data.movies;
-          this.totalMovies = data.data.movie_count;
-          this.totalPages = Math.ceil(this.totalMovies / this.pageSize);
+    this.loading = true;
+    this.error = null;
+
+    // Define the base parameters with proper typing
+    const baseParams = {
+      page: this._pageNumber,
+      limit: this._pageSize,
+      quality: this._qualityFilter !== 'all' ? this._qualityFilter : undefined,
+      genre: this._genreFilter !== 'all' ? this._genreFilter : undefined,
+      minimum_rating: this._ratingFilter || undefined,
+      query_term: this._searchKeyWord || undefined,
+      order_by: this._orderByFilter,
+      sort_by: 'desc' as const,
+      with_rt_ratings: true as const
+    };
+
+    // Create a new object with the base parameters
+    const params: Record<string, any> = { ...baseParams };
+
+    // Add year filter if specified
+    if (this._selectedYear !== 'All') {
+      params['year'] = this._selectedYear;
+    }
+
+    // Add language filter if specified
+    if (this._selectedLanguage !== 'All') {
+      params['language'] = this._selectedLanguage.toLowerCase();
+    }
+
+    this.ytsApiService.getMovies(params).subscribe({
+      next: (response) => {
+        if (response?.data?.movies) {
+          this.movies = response.data.movies;
+          this.totalMovies = response.data.movie_count;
+          this.totalPages = Math.ceil(this.totalMovies / this._pageSize);
         } else {
-          console.log('No movies found or unexpected API response structure.');
           this.movies = [];
           this.totalMovies = 0;
           this.totalPages = 0;
         }
+        this.loading = false;
       },
-      (error) => {
-        console.error('Error fetching movies:', error);
-        this.movies = [];
-        this.totalMovies = 0;
-        this.totalPages = 0;
+      error: (err) => {
+        console.error('Error loading movies:', err);
+        this.error = 'Failed to load movies. Please try again later.';
+        this.loading = false;
       }
-    );
+    });
   }
 
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this._pageNumber = page;
+      this.loadMovies();
+    }
+  }
+
+  onMovieSelect(movieId: number): void {
+    this.movieSelected.emit(movieId);
+  }
+
+  /**
+   * Navigate to the previous page if not on the first page
+   */
+  prevPage(): void {
+    if (this.pageNumber > 1) {
+      this.pageNumber = this.pageNumber - 1;
+      this.loadMovies();
+    }
+  }
+
+  /**
+   * Navigate to the next page if not on the last page
+   */
+  nextPage(): void {
+    if (this.pageNumber < this.totalPages) {
+      this.pageNumber = this.pageNumber + 1;
+      this.loadMovies();
+    }
+  }
+
+  /**
+   * Navigate to a specific page number
+   * @param page The page number to navigate to
+   */
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.pageNumber = page;
-      this.loadMovies();
-    }
-  }
-
-  nextPage(): void {
-    if (this.pageNumber < this.totalPages) {
-      this.pageNumber++;
-      this.loadMovies();
-    }
-  }
-
-  prevPage(): void {
-    if (this.pageNumber > 1) {
-      this.pageNumber--;
       this.loadMovies();
     }
   }
