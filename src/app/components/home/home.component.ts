@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -22,7 +22,7 @@ export class HomeComponent implements OnInit {
   selectedQuality = 'all';
   selectedGenre = 'all';
   selectedYear = 'all';
-  selectedRating = 'all';
+  selectedRating = '0';
   selectedLanguage = 'all';
   searchKeyword = '';
 
@@ -33,12 +33,20 @@ export class HomeComponent implements OnInit {
   }
 
   applyFilters(): void {
-    // This will be handled by the MovieListComponent
+    // Force update the search keyword in movie list component
+    if (this.movieListComponent) {
+      this.movieListComponent.applySearch(this.searchKeyword);
+    }
   }
+
+  // Reference to the MovieListComponent
+  @ViewChild(MovieListComponent) movieListComponent!: MovieListComponent;
 
   onMovieSelect(movieId: number): void {
     this.router.navigate(['/movie', movieId]).catch(error => {
       console.error('Navigation error:', error);
     });
   }
+
+
 }

@@ -25,8 +25,8 @@ export class MovieListComponent implements OnInit {
   private _genreFilter: string = 'all';
   private _ratingFilter: number = 0;
   private _orderByFilter: string = 'latest';
-  private _selectedYear: string = 'All';
-  private _selectedLanguage: string = 'All';
+  private _selectedYear: string = 'all';
+  private _selectedLanguage: string = 'all';
   private _searchKeyWord: string = '';
   private _previousSearchKeyWord: string = '';
   private _previousFilters = {
@@ -34,8 +34,8 @@ export class MovieListComponent implements OnInit {
     genre: 'all',
     rating: 0,
     orderBy: 'latest',
-    year: 'All',
-    language: 'All'
+    year: 'all',
+    language: 'all'
   };
 
   @Output() movieSelected = new EventEmitter<number>();
@@ -71,26 +71,39 @@ export class MovieListComponent implements OnInit {
   get orderByFilter(): string { return this._orderByFilter; }
 
   @Input() set selectedYear(value: string) { 
-    this._selectedYear = value || 'All'; 
+    this._selectedYear = value || 'all'; 
     this.checkAndReload();
   }
   get selectedYear(): string { return this._selectedYear; }
 
   @Input() set selectedLanguage(value: string) { 
-    this._selectedLanguage = value || 'All'; 
+    this._selectedLanguage = value || 'all'; 
     this.checkAndReload();
   }
   get selectedLanguage(): string { return this._selectedLanguage; }
 
   @Input() set searchKeyWord(value: string) {
+    // Only update the search keyword without triggering a reload
     const newValue = value || '';
     if (this._searchKeyWord !== newValue) {
       this._searchKeyWord = newValue;
-      this.checkAndReload();
+      // Don't call checkAndReload here anymore
     }
   }
   get searchKeyWord(): string { 
     return this._searchKeyWord; 
+  }
+
+  // Method to be called when Apply Filter is clicked
+  applySearch(searchTerm: string): void {
+    debugger
+    const newValue = searchTerm || '';
+    if (this._searchKeyWord !== newValue) {
+      this._searchKeyWord = newValue;
+    } else if (newValue === '') {
+      // If search term is empty, still trigger reload to clear any previous search
+    }
+    this.checkAndReload();
   }
 
   constructor(private ytsApiService: YtsApiService) { }
@@ -145,12 +158,12 @@ export class MovieListComponent implements OnInit {
     const params: Record<string, any> = { ...baseParams };
 
     // Add year filter if specified
-    if (this._selectedYear !== 'All') {
+    if (this._selectedYear !== 'all') {
       params['year'] = this._selectedYear;
     }
 
     // Add language filter if specified
-    if (this._selectedLanguage !== 'All') {
+    if (this._selectedLanguage !== 'all') {
       params['language'] = this._selectedLanguage.toLowerCase();
     }
 

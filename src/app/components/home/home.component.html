@@ -93,6 +93,18 @@
           </select>
         </div>
       </div>
+      <div class="search-row">
+        <div class="search-group search-input-group">
+          <label for="search">Search:</label>
+          <input 
+            type="text" 
+            id="search" 
+            [(ngModel)]="searchKeyword" 
+            placeholder="Search movies..."
+            class="search-input"
+          >
+        </div>
+      </div>
 
       <button class="apply-filter-button" (click)="applyFilters()">
         Apply Filter
