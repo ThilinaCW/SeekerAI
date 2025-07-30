@@ -1,9 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { YtsApiService } from '../../services/yts-api.service';
 import { Movie } from '../../models/movie.model';
 
 @Component({
   selector: 'app-movie-list',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './movie-list.component.html',
   styleUrls: ['./movie-list.component.css']
 })

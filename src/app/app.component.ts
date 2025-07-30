@@ -1,18 +1,41 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
-import { MovieListComponent } from './components/movie-list/movie-list.component';
-import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, NavigationEnd, ActivatedRoute, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { MovieListComponent } from './components/movie-list/movie-list.component';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    RouterModule,
+    MovieListComponent
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
   title = 'Seeker';
 
+  private _movieListComponent: MovieListComponent | null = null;
+  private _pendingSearchParams: any = null;
+
   @ViewChild(MovieListComponent, { static: false })
-  private movieListComponent!: MovieListComponent;
+  set movieListComponent(component: MovieListComponent | null) {
+    this._movieListComponent = component;
+    // If we have pending search params and the component is now available, apply them
+    if (component && this._pendingSearchParams) {
+      this.applyFilters();
+      this._pendingSearchParams = null;
+    }
+  }
+
+  get movieListComponent(): MovieListComponent | null {
+    return this._movieListComponent;
+  }
   
   private searchParams: any = {};
 
@@ -108,6 +131,17 @@ export class AppComponent implements OnInit {
       
       // Force a reload of the movies with the new filters
       this.movieListComponent.loadMovies();
+    } else if (this.searchKeyword) {
+      // If the movie list component isn't available yet, store the search params
+      this._pendingSearchParams = {
+        searchKeyword: this.searchKeyword,
+        quality: this.selectedQuality,
+        genre: this.selectedGenre,
+        rating: this.selectedRating,
+        orderBy: this.selectedOrderBy,
+        year: this.selectedYear,
+        language: this.selectedLanguage
+      };
     }
   }
 

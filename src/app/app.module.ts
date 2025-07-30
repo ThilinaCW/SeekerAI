@@ -1,24 +1,3 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { AppRoutingModule } from './app-routing.module';
-
-import { AppComponent } from './app.component';
-import { MovieListComponent } from './components/movie-list/movie-list.component';
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    MovieListComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    FormsModule,
-    AppRoutingModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
+// This file is no longer needed as we're using standalone components
+// and bootstrapping the application directly from main.ts
+// This file can be safely deleted.

@@ -154,6 +154,36 @@
   </div>
 </div>
 
+<!-- Search Results Section -->
+<div *ngIf="showSearchResults" class="search-results-overlay" @fadeIn>
+  <div class="search-results-container">
+    <div class="search-results-header">
+      <h3>Search Results for "{{ searchKeyword }}"</h3>
+      <button class="close-button" (click)="showSearchResults = false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="search-results-content">
+      <app-movie-list 
+        #searchResults
+        [qualityFilter]="'all'"
+        [genreFilter]="'all'"
+        [ratingFilter]="0"
+        [orderByFilter]="'latest'"
+        [selectedYear]="'All'"
+        [selectedLanguage]="'All'"
+        [searchKeyWord]="searchKeyword"
+        [pageNumber]="1"
+        [pageSize]="20"
+        (movieSelected)="onMovieSelect($event)">
+      </app-movie-list>
+    </div>
+  </div>
+</div>
+
 <!-- Download Drawer -->
 <div class="downloads-drawer" [class.active]="isDownloadsDrawerOpen">
   <div class="drawer-overlay" (click)="toggleDownloadsDrawer()"></div>

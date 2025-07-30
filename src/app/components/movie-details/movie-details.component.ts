@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
 import { YtsApiService } from '../../services/yts-api.service';
+import { Movie } from '../../models/movie.model';
+import { filter } from 'rxjs/operators';
+import { MovieListComponent } from '../movie-list/movie-list.component';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { Movie, Torrent } from '../../models/movie.model';
 import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
-import { filter } from 'rxjs/operators';
+import { Torrent } from '../../models/movie.model';
 
 @Component({
   selector: 'app-movie-details',
@@ -17,9 +19,10 @@ import { filter } from 'rxjs/operators';
   imports: [
     CommonModule, 
     RouterModule, 
+    FormsModule, 
     SafeUrlPipe, 
-    SafeHtmlPipe, 
-    FormsModule
+    SafeHtmlPipe,
+    MovieListComponent
   ],
   animations: [
     trigger('fadeInOut', [
@@ -47,6 +50,7 @@ export class MovieDetailsComponent implements OnInit {
   truncatedDescription = '';
   isDownloadsDrawerOpen = false;
   searchKeyword = '';
+  showSearchResults = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -175,18 +179,28 @@ export class MovieDetailsComponent implements OnInit {
     }
   }
 
+  @ViewChild('searchResults') searchResultsList!: MovieListComponent;
+
+  onMovieSelect(movieId: number): void {
+    // Close the search results
+    this.showSearchResults = false;
+    
+    // Navigate to the selected movie details
+    this.router.navigate(['/movie', movieId]).catch(error => {
+      console.error('Navigation error:', error);
+    });
+  }
+
   onSearch(): void {
     const query = this.searchKeyword.trim();
     if (query) {
-      // Navigate to home with search query
-      this.router.navigate(['/'], { 
-        queryParams: { q: query },
-        state: { searchTerm: query }
-      }).catch(error => {
-        console.error('Navigation error:', error);
-        // Fallback to window.location if router navigation fails
-        window.location.href = `/?q=${encodeURIComponent(query)}`;
-      });
+      this.showSearchResults = true;
+      // If we have a reference to the movie list component, trigger search directly
+      if (this.searchResultsList) {
+        this.searchResultsList.searchKeyWord = query;
+        this.searchResultsList.pageNumber = 1; // Reset to first page
+        this.searchResultsList.loadMovies();
+      }
     }
   }
 

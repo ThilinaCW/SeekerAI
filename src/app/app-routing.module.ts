@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
-const routes: Routes = [
+// Export the routes array so it can be used in main.ts
+export const routes: Routes = [
   { 
     path: 'movie/:id', 
     loadComponent: () => import('./components/movie-details/movie-details.component')
@@ -14,9 +14,3 @@ const routes: Routes = [
   },
   { path: '**', redirectTo: '' } // Default route
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }
