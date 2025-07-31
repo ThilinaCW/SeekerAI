@@ -64,7 +64,5 @@ export class YtsApiService {
       `${this.baseUrl}/movie_details.json`,
       { params }
     );
-    var endpointUrl = `${this.baseUrl}/api/v2/movie_details.json?movie_id=${movieId}&with_images=true&with_cast=true`;
-    return this.http.get<any>(endpointUrl);
   }
 }

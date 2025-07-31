@@ -87,6 +87,7 @@
             type="text" 
             id="search" 
             [(ngModel)]="searchKeyword" 
+            (keyup.enter)="applyFilters()"
             placeholder="Search movies..."
             class="search-input"
           >
