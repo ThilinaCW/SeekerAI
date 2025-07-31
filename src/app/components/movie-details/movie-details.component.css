@@ -1,3 +1,6 @@
+/* Import similar movies styles */
+@import './similar-movies.styles.css';
+
 /* Base styles */
 :host {
   display: block;

@@ -5,11 +5,11 @@
       <input 
         type="text" 
         [(ngModel)]="searchKeyword" 
-        (keyup.enter)="onSearch()"
+        (keyup.enter)="onSearch(searchKeyword)"
         placeholder="Search for movies..."
         class="search-input"
       >
-      <button (click)="onSearch()" class="search-button">
+      <button (click)="onSearch(searchKeyword)" class="search-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -25,12 +25,12 @@
       <div class="movie-header-content">
         <div class="movie-poster">
           <img [src]="movie.large_cover_image" [alt]="movie.title + ' poster'" class="movie-poster-img">
-          <div class="movie-actions">
-            <!-- <button (click)="toggleDownloadsDrawer()" class="btn-download">
+          <!-- <div class="movie-actions">
+            <button (click)="toggleDownloadsDrawer()" class="btn-download">
               <i class="icon-download"></i> Download
-            </button> -->
+            </button>
           
-          </div>
+          </div> -->
         </div>
         
         <div class="movie-info">
@@ -189,6 +189,41 @@
           </div>
         </div>
       </div>
+      
+      <!-- Similar Movies Section -->
+      <div class="similar-movies-wrapper">
+        <div class="similar-movies-section" *ngIf="similarMovies && similarMovies.length > 0">
+          <h2 class="section-title">Similar Movies</h2>
+          <div class="similar-movies-container">
+            <div class="similar-movies-scroll">
+              <div class="similar-movie-card" *ngFor="let similarMovie of similarMovies" (click)="navigateToMovie(similarMovie.id)">
+                <div class="similar-movie-poster">
+                  <img [src]="similarMovie.medium_cover_image" [alt]="similarMovie.title + ' poster'" class="similar-movie-img">
+                  <div class="similar-movie-overlay">
+                    <div class="similar-movie-rating" *ngIf="similarMovie.rating">
+                      <span class="rating-value">{{ similarMovie.rating | number:'1.1-1' }}</span>
+                      <div class="rating-stars">
+                        <span *ngFor="let star of [1,2,3,4,5]" 
+                              [class.filled]="star <= (similarMovie.rating / 2)">
+                          ★
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="similar-movie-info">
+                  <h3 class="similar-movie-title">{{ similarMovie.title_english || similarMovie.title }}</h3>
+                  <div class="similar-movie-meta">
+                    <span class="year">{{ similarMovie.year }}</span>
+                    <span class="quality" *ngIf="similarMovie.torrents?.length">{{ similarMovie.torrents[0].quality }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
   </div>
 </div>

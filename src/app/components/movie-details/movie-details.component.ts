@@ -1,15 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
 import { YtsApiService } from '../../services/yts-api.service';
-import { Movie } from '../../models/movie.model';
+import { Movie, MovieListResponse, Torrent } from '../../models/movie.model';
 import { filter } from 'rxjs/operators';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
-import { Torrent } from '../../models/movie.model';
 
 @Component({
   selector: 'app-movie-details',
@@ -52,9 +51,14 @@ import { Torrent } from '../../models/movie.model';
   ]
 })
 export class MovieDetailsComponent implements OnInit {
+  @ViewChild('searchResults') searchResultsListComponent?: MovieListComponent;
+  searchResultsList?: ElementRef;
+  
   movie: Movie | null = null;
+  similarMovies: Movie[] = [];
   loading = true;
   error: string | null = null;
+  loadingSimilar = false;
   showFullDescription = false;
   truncatedDescription = '';
   isDownloadsDrawerOpen = false;
@@ -138,47 +142,84 @@ export class MovieDetailsComponent implements OnInit {
     }
   }
 
-  private loadMovieDetails(movieId: number): void {
+  private loadMovieDetails(id: number): void {
     this.loading = true;
-    this.ytsApiService.getMovieDetails(movieId).subscribe({
+    this.error = null;
+    this.loadingSimilar = true;
+    this.similarMovies = [];
+
+    // Load movie details
+    this.ytsApiService.getMovieDetails(id).subscribe({
       next: (response) => {
-        if (response?.data?.movie) {
-          this.movie = this.processMovieData(response.data.movie);
-        } else {
-          this.error = 'Movie details not found';
-        }
+        this.movie = response.data.movie;
+        this.truncateDescription();
         this.loading = false;
+        
+        // Load similar movies
+        this.loadSimilarMovies(id);
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Error loading movie details:', err);
         this.error = 'Failed to load movie details. Please try again later.';
         this.loading = false;
+        this.loadingSimilar = false;
+      }
+    });
+  }
+
+  loadSimilarMovies(movieId: number): void {
+    this.loadingSimilar = true;
+    this.ytsApiService.getSimilarMovies(movieId, 6).subscribe({
+      next: (response) => {
+        this.similarMovies = response.data.movies || [];
+        this.loadingSimilar = false;
+      },
+      error: (err) => {
+        console.error('Error loading similar movies:', err);
+        this.loadingSimilar = false;
       }
     });
   }
 
   /**
+   * Navigate to a movie's details page
+   * @param movieId The ID of the movie to navigate to
+   */
+  navigateToMovie(movieId: number): void {
+    this.router.navigate(['/movie', movieId], {
+      state: { 
+        searchTerm: this.searchKeyword,
+        fromSimilar: true
+      },
+      replaceUrl: true
+    }).then(() => {
+      // Scroll to top of the page
+      window.scrollTo(0, 0);
+      // Reload the component to load the new movie
+      this.ngOnInit();
+    });
+  }
+
+  private truncateDescription(): void {
+    if (!this.movie) return;
+    
+    const maxLength = 300;
+    if (this.movie.description_full && this.movie.description_full.length > maxLength) {
+      this.truncatedDescription = this.movie.description_full.substring(0, maxLength) + '...';
+    } else if (this.movie.description_intro) {
+      this.truncatedDescription = this.movie.description_intro;
+    } else {
+      this.truncatedDescription = 'No description available.';
+    }
+  }
+
+  /**
    * Process and enhance movie data before displaying
    */
-  private processMovieData(movie: Movie): Movie {
-    // Process and enhance the movie data before displaying
-    const processedMovie: Movie = {
-      ...movie,
-      // Ensure arrays are always defined
-      genres: movie.genres || [],
-      torrents: movie.torrents || [],
-      cast: movie.cast || []
-    };
-
-    // Set initial truncated description if needed
-    if (movie.description_full && movie.description_full.length > 300) {
-      this.truncatedDescription = movie.description_full.substring(0, 300) + '...';
-      this.showFullDescription = false;
-    } else {
-      this.truncatedDescription = movie.description_full || movie.description_intro || '';
-      this.showFullDescription = true;
-    }
-
+  private processMovieData(movie: any): Movie {
+    // Process movie data if needed
+    const processedMovie = { ...movie };
+    
     // Set default images if not provided
     if (!processedMovie.background_image_original && processedMovie.background_image) {
       processedMovie.background_image_original = processedMovie.background_image;
@@ -240,7 +281,9 @@ export class MovieDetailsComponent implements OnInit {
     }
   }
 
-  @ViewChild('searchResults') searchResultsList!: MovieListComponent;
+  @ViewChild('searchResultsList') set searchResultsListRef(ref: ElementRef) {
+    this.searchResultsList = ref;
+  }
 
   onMovieSelect(movieId: number): void {
     // Close the search results
@@ -252,17 +295,19 @@ export class MovieDetailsComponent implements OnInit {
     });
   }
 
-  onSearch(): void {
-    debugger
-    const query = this.searchKeyword.trim();
-    if (query) {
+  onSearch(query: string): void {
+    if (query.trim()) {
+      this.searchKeyword = query;
       this.showSearchResults = true;
-      // If we have a reference to the movie list component, trigger search directly
-      if (this.searchResultsList) {
-        this.searchResultsList.searchKeyWord = query;
-        this.searchResultsList.pageNumber = 1; // Reset to first page
-        this.searchResultsList.loadMovies();
+      
+      // If we have a reference to the search results component, trigger a search
+      if (this.searchResultsListComponent) {
+        this.searchResultsListComponent.searchKeyWord = query;
+        this.searchResultsListComponent.pageNumber = 1; // Reset to first page
+        this.searchResultsListComponent.loadMovies();
       }
+    } else {
+      this.showSearchResults = false;
     }
   }
 

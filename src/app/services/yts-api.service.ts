@@ -65,4 +65,15 @@ export class YtsApiService {
       { params }
     );
   }
+
+  getSimilarMovies(movieId: number, limit: number = 5): Observable<{ data: { movies: Movie[] } }> {
+    const params = new HttpParams()
+      .set('movie_id', movieId.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<{ data: { movies: Movie[] } }>(
+      `${this.baseUrl}/movie_suggestions.json`,
+      { params }
+    );
+  }
 }

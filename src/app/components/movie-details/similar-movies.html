@@ -1,0 +1,31 @@
+<!-- Similar Movies Section -->
+<div class="similar-movies-section" *ngIf="similarMovies && similarMovies.length > 0">
+  <h2 class="section-title">Similar Movies</h2>
+  <div class="similar-movies-container">
+    <div class="similar-movies-scroll">
+      <div class="similar-movie-card" *ngFor="let similarMovie of similarMovies" (click)="navigateToMovie(similarMovie.id)">
+        <div class="similar-movie-poster">
+          <img [src]="similarMovie.medium_cover_image" [alt]="similarMovie.title + ' poster'" class="similar-movie-img">
+          <div class="similar-movie-overlay">
+            <div class="similar-movie-rating" *ngIf="similarMovie.rating">
+              <span class="rating-value">{{ similarMovie.rating | number:'1.1-1' }}</span>
+              <div class="rating-stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      [class.filled]="star <= (similarMovie.rating / 2)">
+                  ★
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="similar-movie-info">
+          <h3 class="similar-movie-title">{{ similarMovie.title_english || similarMovie.title }}</h3>
+          <div class="similar-movie-meta">
+            <span class="year">{{ similarMovie.year }}</span>
+            <span class="quality" *ngIf="similarMovie.torrents?.length">{{ similarMovie.torrents[0].quality }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
