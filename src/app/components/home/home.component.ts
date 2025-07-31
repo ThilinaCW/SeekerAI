@@ -21,7 +21,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 export class HomeComponent implements OnInit {
   selectedQuality = 'all';
   selectedGenre = 'all';
-  selectedYear = 'all';
   selectedRating = '0';
   selectedLanguage = 'all';
   searchKeyword = '';

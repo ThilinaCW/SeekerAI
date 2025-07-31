@@ -38,7 +38,7 @@ export class YtsApiService {
     // Set default values if not provided
     if (!httpParams.has('page')) httpParams = httpParams.set('page', '1');
     if (!httpParams.has('limit')) httpParams = httpParams.set('limit', '20');
-    if (!httpParams.has('sort_by')) httpParams = httpParams.set('sort_by', 'desc');
+    if (!httpParams.has('sort_by')) httpParams = httpParams.set('sort_by', 'year');
     if (!httpParams.has('order_by')) httpParams = httpParams.set('order_by', 'date_added');
     if (!httpParams.has('with_rt_ratings')) httpParams = httpParams.set('with_rt_ratings', 'true');
 

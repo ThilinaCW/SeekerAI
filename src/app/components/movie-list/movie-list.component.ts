@@ -25,7 +25,6 @@ export class MovieListComponent implements OnInit {
   private _genreFilter: string = 'all';
   private _ratingFilter: number = 0;
   private _orderByFilter: string = 'latest';
-  private _selectedYear: string = 'all';
   private _selectedLanguage: string = 'all';
   private _searchKeyWord: string = '';
   private _previousSearchKeyWord: string = '';
@@ -34,7 +33,6 @@ export class MovieListComponent implements OnInit {
     genre: 'all',
     rating: 0,
     orderBy: 'latest',
-    year: 'all',
     language: 'all'
   };
 
@@ -69,13 +67,6 @@ export class MovieListComponent implements OnInit {
     this.checkAndReload();
   }
   get orderByFilter(): string { return this._orderByFilter; }
-
-  @Input() set selectedYear(value: string) { 
-    debugger
-    this._selectedYear = value || 'all'; 
-    this.checkAndReload();
-  }
-  get selectedYear(): string { return this._selectedYear; }
 
   @Input() set selectedLanguage(value: string) { 
     this._selectedLanguage = value || 'all'; 
@@ -120,7 +111,6 @@ export class MovieListComponent implements OnInit {
         this._previousFilters.genre !== this._genreFilter ||
         this._previousFilters.rating !== this._ratingFilter ||
         this._previousFilters.orderBy !== this._orderByFilter ||
-        this._previousFilters.year !== this._selectedYear ||
         this._previousFilters.language !== this._selectedLanguage) {
       
       this._previousSearchKeyWord = this._searchKeyWord;
@@ -129,7 +119,6 @@ export class MovieListComponent implements OnInit {
         genre: this._genreFilter,
         rating: this._ratingFilter,
         orderBy: this._orderByFilter,
-        year: this._selectedYear,
         language: this._selectedLanguage
       };
       
@@ -151,38 +140,13 @@ export class MovieListComponent implements OnInit {
       minimum_rating: this._ratingFilter > 0 ? this._ratingFilter : undefined,
       query_term: this._searchKeyWord || undefined,
       order_by: this._orderByFilter,
-      sort_by: 'desc',
       with_rt_ratings: true
     };
 
     // Create a new object with only defined parameters
     const params: Record<string, any> = { ...baseParams };
 
-    // Handle year filter - support for ranges like '2020-now' or '2010-2019'
-    if (this._selectedYear && this._selectedYear !== 'all') {
-      const currentYear = new Date().getFullYear();
-      
-      if (this._selectedYear.includes('-')) {
-        const [startYear, endYear] = this._selectedYear.split('-');
-        const start = parseInt(startYear, 10);
-        let end = endYear === 'now' ? currentYear : parseInt(endYear, 10);
-        
-        // For ranges, we'll use the minimum_rating parameter to filter by year
-        // This is a workaround since YTS API doesn't natively support year ranges
-        // We'll set a reasonable range that's likely to include the desired movies
-        if (!isNaN(start)) {
-          params['minimum_rating'] = 0; // Reset any previous rating filter
-          // We'll use the query_term to search for movies in the specified range
-          // This is a best-effort approach since YTS API has limited filtering
-          params['query_term'] = (params['query_term'] || '') + 
-            (params['query_term'] ? ' ' : '') + 
-            `year:${start}-${end}`;
-        }
-      } else if (!isNaN(parseInt(this._selectedYear, 10))) {
-        // Single year selection
-        params['year'] = this._selectedYear;
-      }
-    }
+    // Year filter has been removed as per user request
 
     // Add language filter if specified
     if (this._selectedLanguage && this._selectedLanguage !== 'all') {
