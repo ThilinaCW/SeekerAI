@@ -37,6 +37,17 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  clearAllFilters(): void {
+    // Reset all filter values to their defaults
+    this.selectedQuality = 'all';
+    this.selectedGenre = 'all';
+    this.selectedRating = '0';
+    this.searchKeyword = '';
+    
+    // Apply the cleared filters
+    this.applyFilters();
+  }
+
   // Reference to the MovieListComponent
   @ViewChild(MovieListComponent) movieListComponent!: MovieListComponent;
 

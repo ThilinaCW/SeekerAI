@@ -169,6 +169,38 @@
   box-shadow: 0 2px 8px rgba(244, 140, 6, 0.2);
 }
 
+/* Filter Actions */
+.filter-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.clear-filters-link {
+  color: #a0a0a0;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.clear-filters-link:hover {
+  color: #f48c06;
+  text-decoration: none;
+  background-color: rgba(244, 140, 6, 0.1);
+}
+
+.clear-filters-link:active {
+  color: #e67e00;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .search-row {
