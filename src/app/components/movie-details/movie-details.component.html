@@ -28,8 +28,7 @@
           <!-- <div class="movie-actions">
             <button (click)="toggleDownloadsDrawer()" class="btn-download">
               <i class="icon-download"></i> Download
-            </button>
-          
+            </button>          
           </div> -->
         </div>
         
@@ -40,6 +39,7 @@
             <span class="year">{{ movie.year }}</span>
             <span class="mpa-rating" *ngIf="movie.mpa_rating">{{ movie.mpa_rating }}</span>
             <span class="runtime" *ngIf="movie.runtime">{{ movie.runtime }} min</span>
+            <span class="language" *ngIf="movie.language">{{ movie.language | languageName }}</span>
           </div>
           
           <div class="movie-ratings">

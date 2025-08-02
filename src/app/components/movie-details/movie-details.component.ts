@@ -9,6 +9,7 @@ import { MovieListComponent } from '../movie-list/movie-list.component';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
+import { LanguagePipe } from '../../pipes/language.pipe';
 
 @Component({
   selector: 'app-movie-details',
@@ -21,7 +22,8 @@ import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
     FormsModule, 
     SafeUrlPipe, 
     SafeHtmlPipe,
-    MovieListComponent
+    MovieListComponent,
+    LanguagePipe
   ],
   animations: [
     trigger('fadeIn', [
