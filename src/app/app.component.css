@@ -62,11 +62,18 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.8);
-  animation: flame 3s ease-in-out infinite alternate;
+  animation: 
+    flame 3s ease-in-out infinite alternate,
+    blink 3s step-end infinite;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
   letter-spacing: 1px;
   padding-bottom: 10px;
   display: inline-block;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  57% { opacity: 0.3; }
 }
 
 @keyframes flame {
@@ -97,7 +104,9 @@ body {
 }
 
 .logo:hover {
-  animation: flame 0.8s ease-in-out infinite alternate;
+  animation: 
+    flame 0.8s ease-in-out infinite alternate,
+    blink 0.5s step-end infinite;
   filter: brightness(1.4);
 }
 
