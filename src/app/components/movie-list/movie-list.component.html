@@ -10,11 +10,13 @@
   </div>
 </div>
 
-<div class="pagination">
-  <button (click)="prevPage()" [disabled]="pageNumber === 1">Previous</button>
-  <ng-container *ngFor="let page of getPagesArray()">
-    <button (click)="goToPage(page)" [class.active]="pageNumber === page">{{ page }}</button>
-  </ng-container>
-  <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
-  <span class="page-info">Page {{ pageNumber }} of {{ totalPages }}</span>
+<div class="pagination-wrapper">
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="pageNumber === 1">Previous</button>
+    <ng-container *ngFor="let page of getPagesArray()">
+      <button (click)="goToPage(page)" [class.active]="pageNumber === page">{{ page }}</button>
+    </ng-container>
+    <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+  </div>
+  <div class="page-info">Page {{ pageNumber }} of {{ totalPages }}</div>
 </div>

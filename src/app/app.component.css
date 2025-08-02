@@ -187,49 +187,228 @@ main {
   background-color: #007bb5;
 }
 
-/* Main content styles */
+/* ===== MAIN CONTENT ===== */
 main {
-  max-width: 1200px;
-  margin: 45px auto;
-  padding: 60px;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark background for content area */
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  min-height: calc(100vh - 80px - 200px); /* Viewport - header - footer */
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
 }
 
 main h1 {
-  color: #F48C06;
+  color: var(--primary);
   text-align: center;
-  margin-bottom: 20px;
+  margin: 0 0 1.25rem;
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-normal);
 }
 
 main p {
   text-align: center;
-  font-size: 18px;
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
 }
 
-/* Footer Styles */
+/* ===== FOOTER ===== */
 .site-footer {
-  background-color: #0f0f1a;
-  color: #e0e0e0;
-  padding: 1.5rem 2rem 0.5rem;
-  margin-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  padding: 2rem 1rem 1rem;
+  border-top: 1px solid var(--border-color);
+  font-family: var(--font-sans);
+  position: relative;
+  z-index: 2;
 }
 
 .footer-content {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: space-between;
   max-width: 1200px;
-  margin: 0 auto 1rem;
-  gap: 1.5rem;
+  margin: 0 auto;
+  gap: 2rem;
+  padding: 0 1rem;
 }
 
 .footer-section {
-  flex: 0 0 auto;
-  margin-bottom: 0.5rem;
+  flex: 1 1 100%;
+  margin-bottom: 1.5rem;
+  min-width: 0; /* Prevents flex items from overflowing */
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+/* Small devices (576px and up) */
+@media (min-width: 576px) {
+  .footer-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  
+  .footer-section {
+    flex: 1 1 calc(50% - 1rem);
+    min-width: 200px;
+  }
+  
+  main h1 {
+    font-size: var(--text-4xl);
+  }
+}
+
+/* Medium devices (768px and up) */
+@media (min-width: 768px) {
+  main {
+    padding: 3rem 0;
+  }
+  
+  .footer-content {
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+  
+  .footer-section {
+    flex: 1 1 calc(33.333% - 2rem);
+    margin-bottom: 0;
+  }
+  
+  main p {
+    font-size: var(--text-xl);
+    margin-bottom: 2.5rem;
+  }
+}
+
+/* Large devices (992px and up) */
+@media (min-width: 992px) {
+  .footer-content {
+    flex-wrap: nowrap;
+    gap: 2.5rem;
+  }
+  
+  .footer-section {
+    flex: 1;
+    padding: 0 0.5rem;
+  }
+  
+  main {
+    min-height: calc(100vh - 80px - 180px);
+  }
+}
+
+/* Extra large devices (1200px and up) */
+@media (min-width: 1200px) {
+  .site-footer {
+    padding: 2.5rem 2rem 1.5rem;
+  }
+  
+  .footer-content {
+    padding: 0;
+    gap: 3rem;
+  }
+  
+  main h1 {
+    font-size: var(--text-5xl);
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* ===== MOBILE-FIRST STYLES ===== */
+/* Extra small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+  /* Base adjustments */
+  html {
+    font-size: 14px; /* Slightly reduce base font size for small screens */
+  }
+  
+  /* Header adjustments */
+  .site-header {
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Main content */
+  main {
+    padding: 0.75rem;
+    min-height: calc(100vh - 60px - 180px); /* Adjust for smaller header/footer */
+  }
+  
+  main h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: 1rem;
+  }
+  
+  main p {
+    font-size: var(--text-base);
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Search container */
+  .search-container {
+    padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .search-container input[type="text"] {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .search-container button {
+    width: 100%;
+    padding: 0.5rem;
+  }
+  
+  /* Footer adjustments */
+  .site-footer {
+    padding: 1.5rem 0.75rem 0.5rem;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .footer-section {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Ensure touch targets are large enough */
+  a, button, input, .btn {
+    min-height: 44px; /* Minimum touch target size */
+  }
+  
+  /* Hide non-essential elements on mobile */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Ensure images don't overflow */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Improve form elements for touch */
+  input, select, textarea, button {
+    font-size: 16px; /* Prevent iOS zoom on focus */
+  }
+  
+  /* Prevent long words from breaking layout */
+  h1, h2, h3, p, a {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 }
 
 .footer-heading {
