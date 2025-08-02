@@ -88,7 +88,6 @@ export class MovieListComponent implements OnInit {
 
   // Method to be called when Apply Filter is clicked
   applySearch(searchTerm: string): void {
-    debugger
     const newValue = searchTerm || '';
     if (this._searchKeyWord !== newValue) {
       this._searchKeyWord = newValue;
