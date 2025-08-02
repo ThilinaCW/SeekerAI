@@ -150,6 +150,10 @@ export class MovieDetailsComponent implements OnInit {
     this.loadingSimilar = true;
     this.similarMovies = [];
 
+    // Reset screenshot state
+    this.currentScreenshotIndex = 0;
+    this._screenshots = [];
+
     // Load movie details
     this.ytsApiService.getMovieDetails(id).subscribe({
       next: (response) => {

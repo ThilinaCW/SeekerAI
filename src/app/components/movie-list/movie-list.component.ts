@@ -25,15 +25,21 @@ export class MovieListComponent implements OnInit {
   private _genreFilter: string = 'all';
   private _ratingFilter: number = 0;
   private _orderByFilter: string = 'latest';
-  private _selectedLanguage: string = 'all';
   private _searchKeyWord: string = '';
   private _previousSearchKeyWord: string = '';
-  private _previousFilters = {
+  private _selectedLanguage: string = 'All';
+  private _previousFilters: {
+    quality: string;
+    genre: string;
+    rating: number;
+    orderBy: string;
+    language: string;
+  } = {
     quality: 'all',
     genre: 'all',
     rating: 0,
     orderBy: 'latest',
-    language: 'all'
+    language: 'All'
   };
 
   @Output() movieSelected = new EventEmitter<number>();
@@ -68,8 +74,8 @@ export class MovieListComponent implements OnInit {
   }
   get orderByFilter(): string { return this._orderByFilter; }
 
-  @Input() set selectedLanguage(value: string) { 
-    this._selectedLanguage = value || 'all'; 
+  @Input() set selectedLanguage(value: string) {
+    this._selectedLanguage = value || 'All';
     this.checkAndReload();
   }
   get selectedLanguage(): string { return this._selectedLanguage; }
@@ -139,18 +145,14 @@ export class MovieListComponent implements OnInit {
       minimum_rating: this._ratingFilter > 0 ? this._ratingFilter : undefined,
       query_term: this._searchKeyWord || undefined,
       order_by: this._orderByFilter,
-      with_rt_ratings: true
+      with_rt_ratings: true,
+      language: this._selectedLanguage !== 'All' ? this._selectedLanguage : undefined
     };
 
     // Create a new object with only defined parameters
     const params: Record<string, any> = { ...baseParams };
 
     // Year filter has been removed as per user request
-
-    // Add language filter if specified
-    if (this._selectedLanguage && this._selectedLanguage !== 'all') {
-      params['language'] = this._selectedLanguage.toLowerCase();
-    }
 
     this.ytsApiService.getMovies(params).subscribe({
       next: (response: any) => {

@@ -22,7 +22,6 @@ export class HomeComponent implements OnInit {
   selectedQuality = 'all';
   selectedGenre = 'all';
   selectedRating = '0';
-  selectedLanguage = 'all';
   searchKeyword = '';
 
   constructor(private router: Router) {}
