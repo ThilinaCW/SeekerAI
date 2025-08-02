@@ -43,7 +43,6 @@ body {
   margin: 0 auto;
   padding: 0 2rem;
   height: 80px; /* Match this with .main-header height */
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark overlay */
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
