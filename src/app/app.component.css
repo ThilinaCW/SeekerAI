@@ -142,9 +142,9 @@ main {
 /* Main content styles */
 main {
   max-width: 1200px;
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #1a1a1a; /* Dark background for content area */
+  margin: 45px auto;
+  padding: 60px;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark background for content area */
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
