@@ -17,6 +17,43 @@
   border: 2px solid transparent;
   transform: translateZ(0);
   will-change: transform, box-shadow;
+  padding-bottom: 15px;
+}
+
+.movie-card-rating {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 2;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.movie-card-rating i {
+  color: #FFD700;
+  font-size: 12px;
+}
+
+.movie-card-rating.high-rating {
+  background: rgba(46, 125, 50, 0.9);
+}
+
+.movie-card-rating.medium-rating {
+  background: rgba(245, 124, 0, 0.9);
+}
+
+.movie-card-rating.low-rating {
+  background: rgba(211, 47, 47, 0.9);
 }
 
 .movie-card:hover {
@@ -56,7 +93,12 @@
 }
 
 .movie-info {
-  padding: 15px;
+  padding: 15px 10px 5px;
+  color: white;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   position: relative;
   z-index: 2;
   transition: transform 0.3s ease;
@@ -69,19 +111,34 @@
 }
 
 .movie-info h3 {
-  font-size: 18px;
-  color: #F48C06; /* Primary accent from new palette */
-  margin-top: 0;
-  margin-bottom: 5px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
+  color: #f0f0f0;
 }
 
-.movie-info p {
-  font-size: 14px;
-  color: #cccccc;
-  margin-bottom: 5px;
+.movie-info .movie-year {
+  margin: 0;
+  font-size: 13px;
+  color: #bbb;
+  font-weight: 500;
+}
+
+.movie-info .movie-genres {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: #999;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+  min-height: 2.6em;
 }
 
 .movie-rating {
@@ -93,6 +150,78 @@
   font-style: italic;
   color: #999999;
   font-size: 12px;
+}
+
+/* Skeleton Loader Styles */
+.skeleton-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  width: 100%;
+  padding: 20px;
+}
+
+.skeleton-movie-card {
+  background-color: #2a0a11;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.skeleton-cover {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(90deg, #2a0a11 0%, #3d0f1a 50%, #2a0a11 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-info {
+  padding: 15px 10px 5px;
+  text-align: left;
+}
+
+.skeleton-title {
+  width: 80%;
+  height: 20px;
+  background: #3d0f1a;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-year {
+  width: 30%;
+  height: 16px;
+  background: #3d0f1a;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+  animation-delay: 0.2s;
+}
+
+.skeleton-genres {
+  width: 100%;
+  height: 14px;
+  background: #3d0f1a;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+  animation-delay: 0.4s;
+}
+
+@keyframes shimmer {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 /* Pagination styles */

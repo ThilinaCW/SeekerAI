@@ -1,13 +1,31 @@
 <div class="movie-list-container">
-  <div *ngFor="let movie of movies" class="movie-card" (click)="openMovieDetails(movie.id)" style="cursor: pointer;">
-    <img [src]="movie.medium_cover_image" alt="{{ movie.title }}" class="movie-cover">
-    <div class="movie-info">
-      <h3>{{ movie.title }}</h3>
-      <p>{{ movie.year }}</p>
-      <p class="movie-rating">Rating: {{ movie.rating }}</p>
-      <p class="movie-genres">{{ movie.genres.join(', ') }}</p>
+  <!-- Skeleton Loaders -->
+  <div *ngIf="loading" class="skeleton-container">
+    <div *ngFor="let item of skeletonItems" class="skeleton-movie-card">
+      <div class="skeleton-cover"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-year"></div>
+        <div class="skeleton-genres"></div>
+      </div>
     </div>
   </div>
+
+  <!-- Movie Cards -->
+  <ng-container *ngIf="!loading">
+    <div *ngFor="let movie of movies" class="movie-card" (click)="openMovieDetails(movie.id)" style="cursor: pointer;">
+      <div class="movie-card-rating" [class.high-rating]="movie.rating >= 8" [class.medium-rating]="movie.rating >= 6 && movie.rating < 8" [class.low-rating]="movie.rating < 6">
+        {{ movie.rating.toFixed(1) }}
+        <i class="fas fa-star"></i>
+      </div>
+      <img [src]="movie.medium_cover_image" alt="{{ movie.title }}" class="movie-cover">
+      <div class="movie-info">
+        <h3>{{ movie.title }}</h3>
+        <p class="movie-year">{{ movie.year }}</p>
+        <p class="movie-genres">{{ movie.genres.join(', ') }}</p>
+      </div>
+    </div>
+  </ng-container>
 </div>
 
 <div class="pagination-wrapper">

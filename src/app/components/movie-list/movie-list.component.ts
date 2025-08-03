@@ -12,8 +12,9 @@ import { Movie } from '../../models/movie.model';
 })
 export class MovieListComponent implements OnInit {
   movies: Movie[] = [];
-  loading: boolean = false;
+  loading: boolean = true;
   error: string | null = null;
+  skeletonItems = Array(8).fill(0); // Create 8 skeleton items
   currentPage: number = 1;
   totalMovies: number = 0;
   totalPages: number = 0;
