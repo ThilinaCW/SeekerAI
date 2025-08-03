@@ -1,0 +1,36 @@
+# robots.txt for Seeker - Movie Discovery via Torrent
+# Last updated: 2025-08-03
+
+User-agent: *
+Allow: /
+Allow: /movies
+Allow: /movie/
+
+# Sitemap location
+Sitemap: https://yourseekerapp.com/sitemap.xml
+
+# Disallow crawling of admin and API endpoints
+Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /user/
+Disallow: /account/
+
+# Disallow query parameters that don't affect content
+Disallow: /*?*
+Allow: /*?page=
+Allow: /*?quality=
+Allow: /*?genre=
+Allow: /*?rating=
+Allow: /*?query=
+
+# Crawl-delay: 10  # Uncomment and adjust if needed to limit crawl rate
+
+# Additional directives for specific search engines
+# Googlebot-Image: Allow all images to be indexed
+User-agent: Googlebot-Image
+Allow: /*
+
+# Bingbot: Allow all content
+User-agent: bingbot
+Allow: /
