@@ -166,7 +166,7 @@
             </li>
             <li *ngIf="movie.language">
               <span class="info-label">Language:</span>
-              <span class="info-value">{{ movie.language }}</span>
+              <span class="info-value">{{ movie.language | languageName}}</span>
             </li>
             <li *ngIf="movie.mpa_rating">
               <span class="info-label">MPA Rating:</span>
@@ -179,8 +179,19 @@
         <div class="cast-section" *ngIf="movie.cast && movie.cast.length > 0">
           <h3>Cast</h3>
           <div class="cast-grid">
-            <div class="cast-member" *ngFor="let person of movie.cast">
-              <div class="cast-image" [style.background-image]="'url(' + (person.url_small_image || 'assets/placeholder-avatar.png') + ')'"></div>
+            <div class="cast-member" *ngFor="let person of movie.cast; let i = index">
+              <div class="cast-image-container">
+                <img 
+                  [src]="person.url_small_image || 'assets/placeholder-avatar.png'" 
+                  [alt]="person.name + ' as ' + person.character_name"
+                  [attr.loading]="i < 6 ? 'eager' : 'lazy'"
+                  [attr.fetchpriority]="i < 3 ? 'high' : 'auto'"
+                  width="138"
+                  height="175"
+                  onerror="this.onerror=null; this.src='assets/placeholder-avatar.png'"
+                  class="cast-image"
+                >
+              </div>
               <div class="cast-info">
                 <div class="cast-name">{{ person.name }}</div>
                 <div class="cast-character">{{ person.character_name }}</div>

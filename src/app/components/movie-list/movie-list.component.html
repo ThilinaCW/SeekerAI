@@ -13,12 +13,20 @@
 
   <!-- Movie Cards -->
   <ng-container *ngIf="!loading">
-    <div *ngFor="let movie of movies" class="movie-card" (click)="openMovieDetails(movie.id)" style="cursor: pointer;">
+    <div *ngFor="let movie of movies; let i = index" class="movie-card" (click)="openMovieDetails(movie.id)" style="cursor: pointer;">
       <div class="movie-card-rating" [class.high-rating]="movie.rating >= 8" [class.medium-rating]="movie.rating >= 6 && movie.rating < 8" [class.low-rating]="movie.rating < 6">
         {{ movie.rating.toFixed(1) }}
         <i class="fas fa-star"></i>
       </div>
-      <img [src]="movie.medium_cover_image" alt="{{ movie.title }}" class="movie-cover">
+      <img 
+        [src]="movie.medium_cover_image" 
+        [alt]="movie.title + ' movie poster'"
+        [attr.loading]="'lazy'"
+        [attr.fetchpriority]="i < 3 ? 'high' : 'auto'"
+        width="210"
+        height="315"
+        class="movie-cover"
+      >
       <div class="movie-info">
         <h3>{{ movie.title }}</h3>
         <p class="movie-year">{{ movie.year }}</p>
