@@ -7,27 +7,65 @@
 }
 
 .movie-card {
-  background-color: #370617; /* Component background from new palette */
-  border-radius: 8px;
+  background-color: #370617;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  position: relative;
+  border: 2px solid transparent;
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
 }
 
 .movie-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  border-color: #F48C06;
+}
+
+.movie-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.movie-card:hover::before {
+  opacity: 1;
 }
 
 .movie-cover {
   width: 100%;
-  height: 300px; /* Fixed height for covers */
+  height: 300px;
   object-fit: cover;
   display: block;
+  transition: transform 0.3s ease;
+}
+
+.movie-card:hover .movie-cover {
+  transform: scale(1.05);
 }
 
 .movie-info {
   padding: 15px;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s ease;
+  background: rgba(55, 6, 23, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.movie-card:hover .movie-info {
+  transform: translateY(-10px);
 }
 
 .movie-info h3 {

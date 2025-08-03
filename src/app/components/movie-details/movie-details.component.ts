@@ -94,6 +94,32 @@ export class MovieDetailsComponent implements OnInit {
         this.loadMovieDetails(+id);
       }
     });
+    
+    // Scroll to main container when component initializes
+    this.scrollToMain();
+  }
+  
+  // Scroll to the top of the main container with offset for fixed navbar
+  private scrollToMain(): void {
+    // Use setTimeout to ensure the DOM has been updated
+    setTimeout(() => {
+      const mainElement = document.querySelector('main');
+      const navbar = document.querySelector('.main-header');
+      const navbarHeight = navbar ? navbar.getBoundingClientRect().height : 0;
+      
+      if (mainElement) {
+        const elementPosition = mainElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navbarHeight - 20; // 20px additional padding
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback to top of page if element is not found
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 0);
   }
 
   // Get all available screenshots from the movie object
@@ -163,6 +189,9 @@ export class MovieDetailsComponent implements OnInit {
         
         // Load similar movies
         this.loadSimilarMovies(id);
+        
+        // Scroll to main content after content is loaded
+        this.scrollToMain();
       },
       error: (err) => {
         console.error('Error loading movie details:', err);

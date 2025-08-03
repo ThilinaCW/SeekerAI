@@ -27,7 +27,31 @@ export class HomeComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // Initialize component
+    // Scroll to top of main container when component initializes
+    this.scrollToMain();
+  }
+
+  // Scroll to the top of the main container with offset for fixed navbar
+  private scrollToMain(): void {
+    // Use setTimeout to ensure the DOM has been updated
+    setTimeout(() => {
+      const mainElement = document.querySelector('main');
+      const navbar = document.querySelector('.main-header');
+      const navbarHeight = navbar ? navbar.getBoundingClientRect().height : 0;
+      
+      if (mainElement) {
+        const elementPosition = mainElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = elementPosition - navbarHeight - 20; // 20px additional padding
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback to top of page if element is not found
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 0);
   }
 
   applyFilters(): void {
