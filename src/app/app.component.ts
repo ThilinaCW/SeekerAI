@@ -11,7 +11,7 @@ import { Subscription, fromEvent } from 'rxjs';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'SeekerAI';
+  title = 'Magenet';
   currentYear: number = new Date().getFullYear();
   showBackToTop = false;
   private scrollSubscription?: Subscription;
