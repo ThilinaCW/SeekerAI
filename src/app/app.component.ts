@@ -15,6 +15,8 @@ export class AppComponent implements OnInit, OnDestroy {
   currentYear: number = new Date().getFullYear();
   showBackToTop = false;
   private scrollSubscription?: Subscription;
+  
+  // No Font Awesome component properties needed for CSS/Web Fonts approach
 
   constructor() {}
 
