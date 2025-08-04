@@ -5,8 +5,8 @@ export const environment = {
   apiBaseUrl: 'https://yts.mx/api/v2',
   baseSiteUrl: 'https://yourseekerapp.com', // Production URL
   defaultLanguage: 'en',
-  defaultQuality: 'All',
-  defaultGenre: 'All',
+  defaultQuality: 'all',
+  defaultGenre: 'all',
   defaultMinimumRating: 0,
   defaultSortBy: 'download_count',
   defaultOrderBy: 'desc',

@@ -9,8 +9,8 @@ export const environment = {
   apiBaseUrl: 'https://yts.mx/api/v2',
   baseSiteUrl: 'http://localhost:4200', // Local development URL
   defaultLanguage: 'en',
-  defaultQuality: 'All',
-  defaultGenre: 'All',
+  defaultQuality: 'all',
+  defaultGenre: 'all',
   defaultMinimumRating: 0,
   defaultSortBy: 'download_count',
   defaultOrderBy: 'desc',
