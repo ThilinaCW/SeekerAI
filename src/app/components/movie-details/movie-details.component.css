@@ -1788,6 +1788,26 @@
     padding-bottom: 60%; /* Taller aspect ratio */
     border-radius: 0; /* Full width, so no radius needed */
   }
+
+  .movie-content {
+    padding: 1.5rem;
+  }
+
+  .info-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 12px 0;
+  }
+
+  .info-label {
+    font-size: 0.85rem;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
