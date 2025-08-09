@@ -170,14 +170,21 @@
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+  .similar-movies-section {
+    padding: 1.5rem 0;
+  }
+
+  .similar-movies-scroll {
+    padding: 0 1rem; /* Creates the 'peek-a-boo' effect */
+  }
+
   .similar-movie-card {
-    width: 150px;
+    width: 140px; /* Optimized card size for mobile */
   }
   
   .section-title {
     font-size: 1.25rem;
   }
-  
   .similar-movie-title {
     font-size: 0.85rem;
   }
