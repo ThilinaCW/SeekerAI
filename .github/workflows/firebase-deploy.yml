@@ -1,36 +1,39 @@
-name: Deploy Angular to Firebase
+name: Deploy to Firebase Hosting
 
 on:
   push:
     branches:
-      - deployment
+      - deployment  # Change to your default branch
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # 1️⃣ Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # 2️⃣ Setup Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 20
 
+      # 3️⃣ Install dependencies (adjust if needed)
       - name: Install dependencies
         run: npm install
 
-      - name: Build Angular app
-        run: npm run build -- --configuration production
-
+      # 4️⃣ Install Firebase CLI
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Create service account key file
-        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > $HOME/firebase-key.json
+      # 5️⃣ Save service account key from GitHub Secrets
+      - name: Create Firebase service account file
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/firebase-key.json
 
-      - name: Deploy to Firebase Hosting
+      # 6️⃣ Deploy to Firebase Hosting
+      - name: Deploy to Firebase
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/firebase-key.json
         run: firebase deploy --only hosting
