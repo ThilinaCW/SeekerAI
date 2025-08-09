@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "magenet-734b3"
+  },
+  "targets": {
+    "magenet-734b3": {
+      "hosting": {
+        "magenet-online": [
+          "magenet-online"
+        ]
+      }
+    }
   }
 }
