@@ -1778,6 +1778,16 @@
   .download-info {
     width: 100%;
   }
+
+  .trailer-section {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+
+  .trailer-container {
+    padding-bottom: 60%; /* Taller aspect ratio */
+    border-radius: 0; /* Full width, so no radius needed */
+  }
 }
 
 @media (prefers-color-scheme: dark) {
