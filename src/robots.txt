@@ -7,7 +7,7 @@ Allow: /movies
 Allow: /movie/
 
 # Sitemap location
-Sitemap: https://yourseekerapp.com/sitemap.xml
+Sitemap: https://magenet.online/sitemap.xml
 
 # Disallow crawling of admin and API endpoints
 Disallow: /api/
