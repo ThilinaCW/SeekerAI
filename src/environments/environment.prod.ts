@@ -3,7 +3,7 @@ export const environment = {
   // Production-specific overrides go here
   apiUrl: 'https://yts.mx/api/v2',
   apiBaseUrl: 'https://yts.mx/api/v2',
-  baseSiteUrl: 'https://yourseekerapp.com', // Production URL
+  baseSiteUrl: 'https://magenet.online', // Production URL
   defaultLanguage: 'en',
   defaultQuality: 'all',
   defaultGenre: 'all',

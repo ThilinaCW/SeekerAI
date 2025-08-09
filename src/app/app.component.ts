@@ -1,4 +1,5 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { UiService } from './services/ui.service';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { Subscription, fromEvent } from 'rxjs';
@@ -14,29 +15,34 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'Magenet';
   currentYear: number = new Date().getFullYear();
   showBackToTop = false;
+  isDrawerOpen = false;
   private scrollSubscription?: Subscription;
-  
-  // No Font Awesome component properties needed for CSS/Web Fonts approach
+  private drawerSubscription?: Subscription;
 
-  constructor() {}
+  constructor(private uiService: UiService) {}
 
   ngOnInit() {
     // Initialize scroll listener
     this.scrollSubscription = fromEvent(window, 'scroll', { passive: true }).subscribe(() => {
       this.checkScrollPosition();
     });
-    
+
     // Initial check in case the page is loaded with scroll position
     this.checkScrollPosition();
+
+    this.drawerSubscription = this.uiService.isDrawerOpen$.subscribe(isOpen => {
+      this.isDrawerOpen = isOpen;
+      this.checkScrollPosition(); // Re-check visibility when drawer state changes
+    });
   }
 
   @HostListener('window:scroll')
   checkScrollPosition() {
     const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    this.showBackToTop = scrollPosition > 300; // Show button after scrolling 300px
+    this.showBackToTop = !this.isDrawerOpen && scrollPosition > 300; // Show button after scrolling 300px
     console.log('Scroll position:', scrollPosition, 'Show button:', this.showBackToTop);
   }
-  
+
   // For debugging
   ngAfterViewInit() {
     console.log('AppComponent initialized, checking initial scroll position');

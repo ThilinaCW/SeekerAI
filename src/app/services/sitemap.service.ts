@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 })
 export class SitemapService {
   private readonly baseUrl = environment.apiBaseUrl;
-  private readonly baseSiteUrl = environment.baseSiteUrl || 'https://yourseekerapp.com';
+  private readonly baseSiteUrl = environment.baseSiteUrl || 'https://magenet.online/';
   private readonly sitemapPath = 'assets/sitemap.xml';
   private readonly maxUrls = 50000; // Sitemap protocol limit per file
   private readonly maxSize = 50 * 1024 * 1024; // 50MB sitemap size limit

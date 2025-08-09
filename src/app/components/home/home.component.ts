@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
   selectedGenre = 'all';
   selectedRating = '0';
   searchKeyword = '';
+  advancedSearchExpanded = false;
 
   constructor(private router: Router) {}
 
@@ -32,6 +33,10 @@ export class HomeComponent implements OnInit {
   }
 
   // Scroll to the top of the main container with offset for fixed navbar
+  toggleAdvancedSearch(): void {
+    this.advancedSearchExpanded = !this.advancedSearchExpanded;
+  }
+
   private scrollToMain(): void {
     // Use setTimeout to ensure the DOM has been updated
     setTimeout(() => {

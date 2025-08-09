@@ -188,7 +188,7 @@ main {
   max-width: 100%;
   margin: 30px auto 0; /* Added top margin to prevent overlap */
   padding: 2rem 1rem; /* Increased top padding */
-  background-color: #1a1a1a;
+  background-color: transparent;
   min-height: calc(100vh - 100px); /* Adjusted for new margin */
   position: relative;
   z-index: 1;

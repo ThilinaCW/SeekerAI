@@ -158,8 +158,6 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  height: auto;
-  display: block;
   border-radius: 8px 8px 0 0;
 }
 
@@ -1689,6 +1687,168 @@
 }
 
 /* Dark Mode Support */
+/* Search Bar Styles */
+.search-bar-container {
+  background-color: #0f0f11;
+  padding: 1rem;
+  border-bottom: 1px solid #2a2a2f;
+}
+
+.search-bar {
+  display: flex;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #1a1a1f;
+  border-radius: 25px;
+  overflow: hidden;
+}
+
+.search-input {
+  flex-grow: 1;
+  border: none;
+  background: none;
+  padding: 0.8rem 1.2rem;
+  color: #e5e5e5;
+  font-size: 1rem;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.search-button {
+  background-color: transparent;
+  border: none;
+  color: #e5e5e5;
+  padding: 0 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #2a2a2f;
+}
+
+@media (max-width: 768px) {
+  .movie-header {
+    min-height: 300px; /* Ensure header has height */
+    padding: 60px 0 20px; /* Adjust padding for mobile */
+  }
+
+  .search-bar-container {
+    padding: 0.8rem;
+    margin-top: 60px; /* Adjust this value based on your navbar's height */
+  }
+
+  .movie-header-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .movie-poster {
+    max-width: 200px;
+    width: 100%;
+    flex-shrink: 0; /* Prevent the poster from shrinking */
+  }
+
+  .movie-poster-img {
+    width: 100%;
+    height: auto;
+    display: block; /* Remove any extra space below the image */
+  }
+
+  .movie-info {
+    padding: 0 1rem;
+  }
+
+  .movie-title {
+    font-size: 2rem;
+  }
+
+  .download-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .download-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .download-info {
+    width: 100%;
+  }
+
+  .trailer-section {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+
+  .trailer-container {
+    padding-bottom: 60%; /* Taller aspect ratio */
+    border-radius: 0; /* Full width, so no radius needed */
+  }
+
+  .movie-content {
+    padding: 1.5rem;
+  }
+
+  .info-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 12px 0;
+  }
+
+  .info-label {
+    font-size: 0.85rem;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .cast-section {
+    padding: 1.5rem 0;
+  }
+
+  .cast-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 0 1rem;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .cast-list::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  .cast-member {
+    flex: 0 0 100px;
+    text-align: center;
+  }
+
+  .cast-member-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .cast-name {
+    font-size: 0.8rem;
+  }
+
+  .character-name {
+    font-size: 0.75rem;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .movie-details-container,
   .movie-header,

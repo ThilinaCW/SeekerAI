@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
 import { YtsApiService } from '../../services/yts-api.service';
+import { UiService } from '../../services/ui.service';
 import { Movie, MovieListResponse, Torrent } from '../../models/movie.model';
 import { filter } from 'rxjs/operators';
 import { MovieListComponent } from '../movie-list/movie-list.component';
@@ -74,7 +75,8 @@ export class MovieDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private ytsApiService: YtsApiService,
-    private router: Router
+    private router: Router,
+    private uiService: UiService
   ) {
     // Listen to route changes to handle back navigation
     this.router.events.pipe(
@@ -307,6 +309,7 @@ export class MovieDetailsComponent implements OnInit {
 
   toggleDownloadsDrawer(): void {
     this.isDownloadsDrawerOpen = !this.isDownloadsDrawerOpen;
+    this.uiService.setDrawerState(this.isDownloadsDrawerOpen);
     
     // Toggle body scroll when drawer is open
     if (this.isDownloadsDrawerOpen) {
