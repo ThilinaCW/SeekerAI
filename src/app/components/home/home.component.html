@@ -1,6 +1,17 @@
 <div #homeContainer class="home-container">
   <div class="movie-list-container">
-    <div #advancedSearch class="advanced-search">
+    <button class="advanced-search-toggle" (click)="toggleAdvancedSearch()" [class.expanded]="advancedSearchExpanded">
+      <span class="toggle-text">
+        <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.622V13.5a.5.5 0 0 1-.74.439L7 12.439V8.622l-4.872-4.788A.5.5 0 0 1 1.5 3.5v-2z"/>
+        </svg>
+        Advanced Filters
+      </span>
+      <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+      </svg>
+    </button>
+    <div #advancedSearch class="advanced-search" [class.expanded]="advancedSearchExpanded">
       <div class="search-row">
         <div class="search-group">
           <label for="quality">Quality:</label>
