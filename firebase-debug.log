@@ -1,0 +1,48 @@
+[debug] [2025-08-09T12:00:50.950Z] ----------------------------------------------------------------------
+[debug] [2025-08-09T12:00:50.952Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js hosting:sites:create magenet.online --project magenet-734b3
+[debug] [2025-08-09T12:00:50.952Z] CLI Version:   14.11.2
+[debug] [2025-08-09T12:00:50.952Z] Platform:      win32
+[debug] [2025-08-09T12:00:50.952Z] Node Version:  v20.19.1
+[debug] [2025-08-09T12:00:50.952Z] Time:          Sat Aug 09 2025 17:30:50 GMT+0530 (India Standard Time)
+[debug] [2025-08-09T12:00:50.952Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-09T12:00:51.107Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-09T12:00:51.107Z] > authorizing via signed-in user (magenettorrents@gmail.com)
+[debug] [2025-08-09T12:00:51.107Z] [iam] checking project magenet-734b3 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-08-09T12:00:51.108Z] Checked if tokens are valid: false, expires at: 1754724119375
+[debug] [2025-08-09T12:00:51.108Z] Checked if tokens are valid: false, expires at: 1754724119375
+[debug] [2025-08-09T12:00:51.109Z] > refreshing access token with scopes: []
+[debug] [2025-08-09T12:00:51.110Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-08-09T12:00:51.110Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-09T12:00:51.374Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-08-09T12:00:51.374Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-09T12:00:51.381Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3:testIamPermissions [none]
+[debug] [2025-08-09T12:00:51.381Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3:testIamPermissions x-goog-quota-user=projects/magenet-734b3
+[debug] [2025-08-09T12:00:51.381Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-09T12:00:52.567Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3:testIamPermissions 200
+[debug] [2025-08-09T12:00:52.567Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-09T12:00:52.567Z] Checked if tokens are valid: true, expires at: 1754744450374
+[debug] [2025-08-09T12:00:52.567Z] Checked if tokens are valid: true, expires at: 1754744450374
+[debug] [2025-08-09T12:00:52.568Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3 [none]
+[debug] [2025-08-09T12:00:52.885Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3 200
+[debug] [2025-08-09T12:00:52.886Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/magenet-734b3 {"projectNumber":"508827707106","projectId":"magenet-734b3","lifecycleState":"ACTIVE","name":"magenet","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-08-04T19:22:24.855753Z"}
+[debug] [2025-08-09T12:00:52.886Z] Checked if tokens are valid: true, expires at: 1754744450374
+[debug] [2025-08-09T12:00:52.886Z] Checked if tokens are valid: true, expires at: 1754744450374
+[debug] [2025-08-09T12:00:52.886Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/508827707106/sites siteId=magenet.online
+[debug] [2025-08-09T12:00:52.886Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/508827707106/sites {"appId":""}
+[debug] [2025-08-09T12:00:53.966Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/508827707106/sites 400
+[debug] [2025-08-09T12:00:53.966Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/508827707106/sites {"error":{"code":400,"message":"Invalid name: `magenet.online` is invalid; try something like `magenet-online-c34c2` instead","status":"INVALID_ARGUMENT"}}
+[warn] !  Invalid name: `magenet.online` is invalid; try something like `magenet-online-c34c2` instead 
+[debug] [2025-08-09T12:01:06.373Z] ExitPromptError: User force closed the prompt with SIGINT
+    at Interface.sigint (C:\Users\ThilinaWanniarachchi\AppData\Roaming\nvm\v20.19.1\node_modules\firebase-tools\node_modules\@inquirer\core\dist\commonjs\lib\create-prompt.js:101:37)
+    at Interface.emit (node:events:524:28)
+    at Interface.emit (node:domain:489:12)
+    at [_ttyWrite] [as _ttyWrite] (node:internal/readline/interface:1125:18)
+    at ReadStream.onkeypress (node:internal/readline/interface:264:20)
+    at ReadStream.emit (node:events:536:35)
+    at ReadStream.emit (node:domain:489:12)
+    at emitKeys (node:internal/readline/utils:371:14)
+    at emitKeys.next (<anonymous>)
+    at ReadStream.onData (node:internal/readline/emitKeypressEvents:64:36)
+[error] 
+[error] Error: An unexpected error has occurred.
