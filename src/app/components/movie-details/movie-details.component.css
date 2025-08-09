@@ -1808,6 +1808,40 @@
     font-size: 0.95rem;
     font-weight: 500;
   }
+
+  .cast-section {
+    padding: 1.5rem 0;
+  }
+
+  .cast-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 0 1rem;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .cast-list::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  .cast-member {
+    flex: 0 0 100px;
+    text-align: center;
+  }
+
+  .cast-member-img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .cast-name {
+    font-size: 0.8rem;
+  }
+
+  .character-name {
+    font-size: 0.75rem;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
