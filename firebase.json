@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "magenet.online", 
     "public": "dist/seekerai",
     "ignore": [
       "firebase.json",

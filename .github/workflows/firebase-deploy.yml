@@ -1,12 +1,12 @@
-name: Deploy to Firebase Hosting
+name: Deploy Angular to Firebase
 
 on:
   push:
     branches:
-      - deployment   # Change if your branch is 'deployment' or another name
+      - deployment
 
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,13 +18,19 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Angular app
+        run: npm run build -- --configuration production
+
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Deploy to Firebase
+      - name: Create service account key file
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > $HOME/firebase-key.json
+
+      - name: Deploy to Firebase Hosting
         env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > "${HOME}/firebase-key.json"
-          firebase auth:login:ci || true
-          firebase deploy --only hosting --project magenet-734b3 --token "$(firebase login:ci --no-localhost --token "$(cat ${HOME}/firebase-key.json)")"
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/firebase-key.json
+        run: firebase deploy --only hosting
