@@ -1732,6 +1732,11 @@
 }
 
 @media (max-width: 768px) {
+  .movie-header {
+    min-height: 300px; /* Ensure header has height */
+    padding: 60px 0 20px; /* Adjust padding for mobile */
+  }
+
   .search-bar-container {
     padding: 0.8rem;
     margin-top: 60px; /* Adjust this value based on your navbar's height */
