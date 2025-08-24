@@ -8,6 +8,11 @@ export const routes: Routes = [
       .then(m => m.MovieDetailsComponent)
   },
   { 
+    path: 'movie/:id-:titleSlug', 
+    loadComponent: () => import('./components/movie-details/movie-details.component')
+      .then(m => m.MovieDetailsComponent)
+  },
+  { 
     path: '',
     loadComponent: () => import('./components/home/home.component')
       .then(m => m.HomeComponent)

@@ -37,6 +37,39 @@ export class HomeComponent implements OnInit {
     this.advancedSearchExpanded = !this.advancedSearchExpanded;
   }
 
+  onMovieSelect(movie: any): void {
+    if (!movie || !movie.id) {
+      console.error('Invalid movie object:', movie);
+      return;
+    }
+
+    try {
+      // Create a URL-friendly slug from the movie title
+      const titleSlug = (movie.title || 'movie').toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Remove special characters
+        .replace(/\s+/g, '-')      // Replace spaces with hyphens
+        .replace(/--+/g, '-')      // Replace multiple hyphens with single hyphen
+        .trim()                    // Remove leading/trailing hyphens
+        .substring(0, 50);         // Limit the length of the slug
+      
+      const movieUrl = `/movie/${movie.id}-${titleSlug}`;
+      console.log('Navigating to:', movieUrl);
+      
+      // Navigate using the router
+      this.router.navigateByUrl(movieUrl, { replaceUrl: true })
+        .then(navigated => {
+          if (!navigated) {
+            console.warn('Navigation failed, falling back to window.location');
+            window.location.href = movieUrl;
+          }
+        });
+    } catch (error) {
+      console.error('Error navigating to movie details:', error);
+      // Fallback to just the ID if there's an error with the slug
+      this.router.navigate(['/movie', movie.id]);
+    }
+  }
+
   private scrollToMain(): void {
     // Use setTimeout to ensure the DOM has been updated
     setTimeout(() => {
@@ -79,12 +112,6 @@ export class HomeComponent implements OnInit {
 
   // Reference to the MovieListComponent
   @ViewChild(MovieListComponent) movieListComponent!: MovieListComponent;
-
-  onMovieSelect(movieId: number): void {
-    this.router.navigate(['/movie', movieId]).catch(error => {
-      console.error('Navigation error:', error);
-    });
-  }
 
   // Generate an array of years from start to end (inclusive)
   getYearRange(start: number, end: number): number[] {

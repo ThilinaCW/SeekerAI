@@ -207,7 +207,7 @@
           <h2 class="section-title">Similar Movies</h2>
           <div class="similar-movies-container">
             <div class="similar-movies-scroll">
-              <div class="similar-movie-card" *ngFor="let similarMovie of similarMovies" (click)="navigateToMovie(similarMovie.id)">
+              <div class="similar-movie-card" *ngFor="let similarMovie of similarMovies" (click)="navigateToMovie(similarMovie)">
                 <div class="similar-movie-poster">
                   <img [src]="similarMovie.medium_cover_image" [alt]="similarMovie.title + ' poster'" class="similar-movie-img">
                   <div class="similar-movie-overlay">

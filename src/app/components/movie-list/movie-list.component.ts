@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { YtsApiService } from '../../services/yts-api.service';
 import { Movie } from '../../models/movie.model';
 
 @Component({
   selector: 'app-movie-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './movie-list.component.html',
   styleUrls: ['./movie-list.component.css']
 })
@@ -43,7 +44,7 @@ export class MovieListComponent implements OnInit {
     language: 'All'
   };
 
-  @Output() movieSelected = new EventEmitter<number>();
+  @Output() movieSelected = new EventEmitter<any>();
 
   @Input() set pageNumber(value: number) { this._pageNumber = value; }
   get pageNumber(): number { return this._pageNumber; }
@@ -104,7 +105,10 @@ export class MovieListComponent implements OnInit {
     this.checkAndReload();
   }
 
-  constructor(private ytsApiService: YtsApiService) { }
+  constructor(
+    private ytsApiService: YtsApiService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadMovies();
@@ -186,8 +190,18 @@ export class MovieListComponent implements OnInit {
     }
   }
 
-  onMovieSelect(movieId: number): void {
-    this.movieSelected.emit(movieId);
+  onMovieSelect(movie: any): void {
+    console.log('Movie selected:', movie);
+    console.log('Number of observers:', this.movieSelected.observers.length);
+    if (this.movieSelected.observers.length > 0) {
+      // If there are subscribers to the event, emit the movie
+      console.log('Emitting movie to parent component');
+      this.movieSelected.emit(movie);
+    } else {
+      // If no subscribers, handle navigation directly
+      console.log('No parent subscribers, handling navigation directly');
+      this.openMovieDetails(movie);
+    }
   }
 
   /**
@@ -231,9 +245,37 @@ export class MovieListComponent implements OnInit {
     }
     return pages;
   }
-  openMovieDetails(movieId: number): void {
-    // Emit the selected movie ID to parent component
-    this.movieSelected.emit(movieId);
+  openMovieDetails(movie: any): void {
+    if (!movie || !movie.id) {
+      console.error('Invalid movie object:', movie);
+      return;
+    }
+    
+    try {
+      // Create a URL-friendly slug from the movie title
+      const titleSlug = (movie.title || 'movie').toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Remove special characters
+        .replace(/\s+/g, '-')      // Replace spaces with hyphens
+        .replace(/--+/g, '-')      // Replace multiple hyphens with single hyphen
+        .trim()                    // Remove leading/trailing hyphens
+        .substring(0, 50);         // Limit the length of the slug
+      
+      const movieUrl = `/movie/${movie.id}-${titleSlug}`;
+      console.log('Navigating to:', movieUrl);
+      
+      // Navigate using window.location to force a full page reload
+      this.router.navigateByUrl(movieUrl, { replaceUrl: true })
+        .then(navigated => {
+          if (!navigated) {
+            console.warn('Navigation failed, falling back to window.location');
+            window.location.href = movieUrl;
+          }
+        });
+    } catch (error) {
+      console.error('Error navigating to movie details:', error);
+      // Fallback to just the ID if there's an error with the slug
+      this.router.navigate(['/movie', movie.id]);
+    }
   }
 }
 
