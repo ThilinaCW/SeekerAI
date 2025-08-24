@@ -91,9 +91,20 @@ export class MovieDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.loadMovieDetails(+id);
+      const idParam = params.get('id');
+      
+      if (idParam) {
+        // Extract the numeric ID part from the URL parameter
+        const idMatch = idParam.match(/^(\d+)/);
+        if (idMatch && idMatch[1]) {
+          this.loadMovieDetails(+idMatch[1]);
+        } else {
+          this.error = 'Invalid movie ID in URL';
+          this.loading = false;
+        }
+      } else {
+        this.error = 'No movie ID provided in URL';
+        this.loading = false;
       }
     });
     
@@ -220,16 +231,22 @@ export class MovieDetailsComponent implements OnInit {
 
   /**
    * Navigate to a movie's details page
-   * @param movieId The ID of the movie to navigate to
+   * @param movie The movie object containing id and title
    */
-  navigateToMovie(movieId: number): void {
-    this.router.navigate(['/movie', movieId], {
-      state: { 
-        searchTerm: this.searchKeyword,
-        fromSimilar: true
-      },
-      replaceUrl: true
-    }).then(() => {
+  navigateToMovie(movie: any): void {
+    // Close any open drawers
+    this.isDownloadsDrawerOpen = false;
+    this.showSearchResults = false;
+    
+    // Create a URL-friendly slug from the movie title
+    const titleSlug = movie.title.toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/--+/g, '-')
+      .trim();
+    
+    // Navigate to the movie details page with ID and title in URL
+    this.router.navigate(['/movie', `${movie.id}-${titleSlug}`]).then(() => {
       // Scroll to top of the page
       window.scrollTo(0, 0);
       // Reload the component to load the new movie
@@ -323,12 +340,19 @@ export class MovieDetailsComponent implements OnInit {
     this.searchResultsList = ref;
   }
 
-  onMovieSelect(movieId: number): void {
+  onMovieSelect(movie: any): void {
     // Close the search results
     this.showSearchResults = false;
     
-    // Navigate to the selected movie details
-    this.router.navigate(['/movie', movieId]).catch(error => {
+    // Create a URL-friendly slug from the movie title
+    const titleSlug = movie.title.toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/--+/g, '-')
+      .trim();
+    
+    // Navigate to the selected movie details with ID and title in URL
+    this.router.navigate(['/movie', `${movie.id}-${titleSlug}`]).catch(error => {
       console.error('Navigation error:', error);
     });
   }
