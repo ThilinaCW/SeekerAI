@@ -5,6 +5,54 @@
   color: #f1e4e4;
 }
 
+.main-heading {
+  color: #ffffff;
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin: 2rem 0 2.5rem;
+  line-height: 1.2;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #a162e8, #4cc9f0);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 8s ease infinite;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.5px;
+  padding: 0.5rem 0;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.main-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #4cc9f0, #a162e8);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(76, 201, 240, 0.4);
+}
+
+@media (max-width: 768px) {
+  .main-heading {
+    font-size: 2rem;
+    margin: 1.5rem 0 2rem;
+    padding: 0 1rem;
+  }
+}
+
 .movie-list-container {
   margin-top: 20px;
 }
