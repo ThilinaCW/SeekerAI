@@ -610,11 +610,17 @@ main p {
 .footer-bottom a {
   color: #f5c518;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
 }
 
 .footer-bottom a:hover {
-  text-decoration: underline;
+  text-decoration: none;
+  background-color: rgba(245, 197, 24, 0.1);
+  color: #ffd700;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
 }
 
 /* Responsive Design */
