@@ -18,6 +18,11 @@ export const routes: Routes = [
       .then(m => m.AboutComponent)
   },
   { 
+    path: 'sitemap',
+    loadComponent: () => import('./sitemap/sitemap.component')
+      .then(m => m.SitemapComponent)
+  },
+  { 
     path: '',
     loadComponent: () => import('./components/home/home.component')
       .then(m => m.HomeComponent)
