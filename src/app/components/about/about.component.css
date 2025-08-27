@@ -1,0 +1,121 @@
+.about-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: #333;
+  }
+  
+  .about-content h1 {
+    color: #1976d2;
+    margin-bottom: 1.5rem;
+  }
+  
+  .about-content h2 {
+    color: #1976d2;
+    margin: 1.5rem 0 1rem;
+  }
+  
+  .about-content h2 {
+    font-size: 1.3rem;
+  }
+  
+  .about-content ul {
+    padding-left: 1.5rem;
+    line-height: 1.6;
+  }
+  
+  .about-content li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .about-content p {
+    color: #000000;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .features, .tech-stack {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Dashboard Showcase */
+  .dashboard-showcase {
+    margin: 3rem 0;
+    text-align: center;
+  }
+  
+  .dashboard-showcase h2 {
+    color: #1976d2;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.5rem;
+  }
+  
+  .dashboard-showcase h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #1976d2, transparent);
+  }
+  
+  .dashboard-image-container {
+    margin: 2rem auto;
+    max-width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .dashboard-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  
+  .dashboard-image-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dashboard-image-container:hover .dashboard-image {
+    transform: scale(1.02);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .dashboard-showcase {
+      margin: 2rem 0;
+    }
+    
+    .dashboard-showcase h2 {
+      font-size: 1.6rem;
+    }
+    
+    .dashboard-image-container {
+      border-radius: 6px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .dashboard-showcase h2 {
+      font-size: 1.4rem;
+    }
+    
+    .dashboard-image-container {
+      margin: 1.5rem auto;
+      border-radius: 4px;
+    }
+  }
