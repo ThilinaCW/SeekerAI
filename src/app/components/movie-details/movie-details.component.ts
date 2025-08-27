@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -11,6 +11,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { LanguagePipe } from '../../pipes/language.pipe';
+import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-movie-details',
@@ -53,7 +54,7 @@ import { LanguagePipe } from '../../pipes/language.pipe';
     ])
   ]
 })
-export class MovieDetailsComponent implements OnInit {
+export class MovieDetailsComponent implements OnInit, OnDestroy {
   @ViewChild('searchResults') searchResultsListComponent?: MovieListComponent;
   searchResultsList?: ElementRef;
   
@@ -72,11 +73,15 @@ export class MovieDetailsComponent implements OnInit {
   currentScreenshotIndex = 0;
   private _screenshots: string[] = [];
 
+  private jsonLdScript: HTMLScriptElement | null = null;
+
   constructor(
     private route: ActivatedRoute,
-    private ytsApiService: YtsApiService,
     private router: Router,
-    private uiService: UiService
+    private ytsApiService: YtsApiService,
+    private uiService: UiService,
+    private meta: Meta,
+    private title: Title
   ) {
     // Listen to route changes to handle back navigation
     this.router.events.pipe(
@@ -87,6 +92,111 @@ export class MovieDetailsComponent implements OnInit {
         this.searchKeyword = this.router.getCurrentNavigation()?.extras?.state?.['searchTerm'] || '';
       }
     });
+
+    // Handle navigation end to update structured data when navigating between movie details
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      if (this.movie) {
+        this.addJsonLdSchema(this.movie);
+      }
+    });
+  }
+
+  private addJsonLdSchema(movie: Movie): void {
+    // Remove existing JSON-LD if any
+    this.removeJsonLd();
+
+    // Create script element
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    
+    // Get the best quality torrent URL
+    const bestTorrent = movie.torrents?.reduce((prev, current) => 
+      (prev.quality && prev.quality > current.quality) ? prev : current
+    );
+
+    // Create structured data
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Movie',
+      name: movie.title,
+      image: movie.large_cover_image,
+      description: movie.description_full || `${movie.title} - Watch or download in HD quality`,
+      dateCreated: movie.year ? `${movie.year}-01-01` : undefined,
+      genre: movie.genres || [],
+      contentRating: movie.mpa_rating || 'Not Rated',
+      duration: movie.runtime ? `PT${movie.runtime}M` : undefined,
+      aggregateRating: movie.rating ? {
+        '@type': 'AggregateRating',
+        ratingValue: movie.rating,
+        bestRating: '10',
+        worstRating: '0',
+        ratingCount: movie.like_count || 0
+      } : undefined,
+      trailer: movie.yt_trailer_code ? {
+        '@type': 'VideoObject',
+        name: `${movie.title} Trailer`,
+        description: `Official trailer for ${movie.title}`,
+        thumbnailUrl: movie.medium_cover_image,
+        uploadDate: movie.date_uploaded || new Date().toISOString(),
+        duration: 'PT2M',
+        contentUrl: `https://www.youtube.com/watch?v=${movie.yt_trailer_code}`
+      } : undefined,
+      ...(bestTorrent && {
+        video: {
+          '@type': 'VideoObject',
+          name: movie.title,
+          description: movie.description_full || `${movie.title} full movie`,
+          thumbnailUrl: movie.medium_cover_image,
+          uploadDate: movie.date_uploaded || new Date().toISOString(),
+          contentUrl: bestTorrent.url,
+          encodingFormat: 'video/mp4',
+          width: '1920',
+          height: '1080',
+          ...(movie.runtime && { duration: `PT${movie.runtime}M` })
+        }
+      })
+    };
+
+    script.text = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+    this.jsonLdScript = script;
+
+    // Also update meta tags for better sharing and SEO
+    this.updateMetaTags(movie);
+  }
+
+  private removeJsonLd(): void {
+    if (this.jsonLdScript) {
+      document.head.removeChild(this.jsonLdScript);
+      this.jsonLdScript = null;
+    }
+  }
+
+  private updateMetaTags(movie: Movie): void {
+    // Update page title
+    this.title.setTitle(`${movie.title} (${movie.year}) - SeekerAI`);
+
+    // Update meta tags
+    this.meta.updateTag({ name: 'description', content: movie.description_full || `${movie.title} - Watch or download in HD quality` });
+    
+    // Open Graph / Facebook
+    this.meta.updateTag({ property: 'og:type', content: 'video.movie' });
+    this.meta.updateTag({ property: 'og:title', content: movie.title });
+    this.meta.updateTag({ property: 'og:description', content: movie.description_full || movie.title });
+    this.meta.updateTag({ property: 'og:image', content: movie.large_cover_image });
+    this.meta.updateTag({ property: 'og:url', content: window.location.href });
+    
+    // Twitter Card
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.meta.updateTag({ name: 'twitter:title', content: movie.title });
+    this.meta.updateTag({ name: 'twitter:description', content: movie.description_full || movie.title });
+    this.meta.updateTag({ name: 'twitter:image', content: movie.large_cover_image });
+  }
+
+  ngOnDestroy(): void {
+    this.removeJsonLd();
   }
 
   ngOnInit(): void {
@@ -94,14 +204,8 @@ export class MovieDetailsComponent implements OnInit {
       const idParam = params.get('id');
       
       if (idParam) {
-        // Extract the numeric ID part from the URL parameter
-        const idMatch = idParam.match(/^(\d+)/);
-        if (idMatch && idMatch[1]) {
-          this.loadMovieDetails(+idMatch[1]);
-        } else {
-          this.error = 'Invalid movie ID in URL';
-          this.loading = false;
-        }
+        // Use the ID parameter as is, let the service handle the type
+        this.loadMovieDetails(idParam);
       } else {
         this.error = 'No movie ID provided in URL';
         this.loading = false;
@@ -183,7 +287,7 @@ export class MovieDetailsComponent implements OnInit {
     }
   }
 
-  private loadMovieDetails(id: number): void {
+  private loadMovieDetails(id: string | number): void {
     this.loading = true;
     this.error = null;
     this.loadingSimilar = true;
@@ -193,15 +297,20 @@ export class MovieDetailsComponent implements OnInit {
     this.currentScreenshotIndex = 0;
     this._screenshots = [];
 
+    // Convert ID to number if it's a string
+    const movieId = typeof id === 'string' ? parseInt(id, 10) : id;
+
     // Load movie details
-    this.ytsApiService.getMovieDetails(id).subscribe({
+    this.ytsApiService.getMovieDetails(movieId).subscribe({
       next: (response) => {
         this.movie = response.data.movie;
         this.truncateDescription();
+        // Add JSON-LD structured data
+        this.addJsonLdSchema(this.movie);
         this.loading = false;
         
-        // Load similar movies
-        this.loadSimilarMovies(id);
+        // Load similar movies with the numeric ID
+        this.loadSimilarMovies(movieId);
         
         // Scroll to main content after content is loaded
         this.scrollToMain();
