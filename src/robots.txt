@@ -1,4 +1,4 @@
-# robots.txt for Seeker - Movie Discovery via Torrent
+# robots.txt for Magenet - Explore a World of HD Movies in One Place
 # Last updated: 2025-08-03
 
 User-agent: *
