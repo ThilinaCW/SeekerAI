@@ -176,7 +176,7 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
 
   private updateMetaTags(movie: Movie): void {
     // Update page title
-    this.title.setTitle(`${movie.title} (${movie.year}) - SeekerAI`);
+    this.title.setTitle(`${movie.title} (${movie.year}) - Magenet online`);
 
     // Update meta tags
     this.meta.updateTag({ name: 'description', content: movie.description_full || `${movie.title} - Watch or download in HD quality` });
