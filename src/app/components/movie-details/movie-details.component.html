@@ -1,19 +1,25 @@
 <div class="yts-movie-details" *ngIf="!loading && !error && movie" @fadeIn>
-  <!-- Search Bar -->
-  <div class="search-bar-container">
-    <div class="search-bar">
-      <input 
-        type="text" 
-        [(ngModel)]="searchKeyword" 
-        (keyup.enter)="onSearch(searchKeyword)"
-        placeholder="Search for movies..."
-        class="search-input"
-      >
-      <button (click)="onSearch(searchKeyword)" class="search-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  <!-- Search Bar Section -->
+  <div class="search-section">
+    <div class="search-bar-container">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          [(ngModel)]="searchKeyword" 
+          (keyup.enter)="onSearch(searchKeyword)"
+          placeholder="Search for movies..."
+          class="search-input"
+        >
+        <button (click)="onSearch(searchKeyword)" class="search-button" aria-label="Search movies">
+          <i class="fa fa-search" aria-hidden="true"></i>
+        </button>
+      </div>
+      <button (click)="goBack()" class="back-button" aria-label="Go back to home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
+        <span class="back-text">Back to Home</span>
       </button>
     </div>
   </div>
