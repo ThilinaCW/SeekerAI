@@ -30,7 +30,7 @@ jobs:
 
       # 5️⃣ Build Angular app
       - name: Build Angular app
-        run: ng build --configuration production
+        run: ng build --configuration production --aot
 
       # 6️⃣ Install Firebase CLI
       - name: Install Firebase CLI
