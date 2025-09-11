@@ -1,9 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MovieListComponent } from '../movie-list/movie-list.component';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { SeoService } from '../../services/seo.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -25,11 +27,23 @@ export class HomeComponent implements OnInit {
   searchKeyword = '';
   advancedSearchExpanded = false;
 
-  constructor(private router: Router) {}
+  private seoSubscription?: Subscription;
+
+  constructor(
+    private router: Router,
+    private seoService: SeoService
+  ) {}
 
   ngOnInit(): void {
+    this.setSeoMetadata();
     // Scroll to top of main container when component initializes
     this.scrollToMain();
+  }
+
+  private setSeoMetadata(): void {
+    this.seoService.setTitle('SeekerAI - Find and Download Movies');
+    this.seoService.setMetaDescription('Search and download your favorite movies in high quality. Browse by genre, rating, and more.');
+    this.seoService.setCanonicalUrl();
   }
 
   // Scroll to the top of the main container with offset for fixed navbar
