@@ -1,3 +1,6 @@
+<!-- JSON-LD Structured Data for SEO -->
+<app-json-ld *ngIf="movieSchema" [schema]="movieSchema"></app-json-ld>
+
 <div class="yts-movie-details" *ngIf="!loading && !error && movie" @fadeIn>
   <!-- Search Bar Section -->
   <div class="search-section">

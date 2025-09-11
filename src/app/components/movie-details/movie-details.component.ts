@@ -12,6 +12,9 @@ import { SafeUrlPipe } from '../../pipes/safe-url.pipe';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { LanguagePipe } from '../../pipes/language.pipe';
 import { Meta, Title } from '@angular/platform-browser';
+import { JsonLdComponent } from '../shared/json-ld.component';
+import { SchemaService } from '../../services/schema.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-movie-details',
@@ -25,7 +28,8 @@ import { Meta, Title } from '@angular/platform-browser';
     SafeUrlPipe, 
     SafeHtmlPipe,
     MovieListComponent,
-    LanguagePipe
+    LanguagePipe,
+    JsonLdComponent
   ],
   animations: [
     trigger('fadeIn', [
@@ -75,13 +79,16 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
 
   private jsonLdScript: HTMLScriptElement | null = null;
 
+  movieSchema: any;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private ytsApiService: YtsApiService,
     private uiService: UiService,
+    private titleService: Title,
     private meta: Meta,
-    private title: Title
+    private schemaService: SchemaService
   ) {
     // Listen to route changes to handle back navigation
     this.router.events.pipe(
@@ -98,101 +105,80 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       if (this.movie) {
-        this.addJsonLdSchema(this.movie);
+        this.generateStructuredData();
       }
     });
   }
 
-  private addJsonLdSchema(movie: Movie): void {
-    // Remove existing JSON-LD if any
-    this.removeJsonLd();
-
-    // Create script element
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    
-    // Get the best quality torrent URL
-    const bestTorrent = movie.torrents?.reduce((prev, current) => 
-      (prev.quality && prev.quality > current.quality) ? prev : current
-    );
-
-    // Create structured data
-    const jsonLd = {
-      '@context': 'https://schema.org',
-      '@type': 'Movie',
-      name: movie.title,
-      image: movie.large_cover_image,
-      description: movie.description_full || `${movie.title} - Watch or download in HD quality`,
-      dateCreated: movie.year ? `${movie.year}-01-01` : undefined,
-      genre: movie.genres || [],
-      contentRating: movie.mpa_rating || 'Not Rated',
-      duration: movie.runtime ? `PT${movie.runtime}M` : undefined,
-      aggregateRating: movie.rating ? {
-        '@type': 'AggregateRating',
-        ratingValue: movie.rating,
-        bestRating: '10',
-        worstRating: '0',
-        ratingCount: movie.like_count || 0
-      } : undefined,
-      trailer: movie.yt_trailer_code ? {
-        '@type': 'VideoObject',
-        name: `${movie.title} Trailer`,
-        description: `Official trailer for ${movie.title}`,
-        thumbnailUrl: movie.medium_cover_image,
-        uploadDate: movie.date_uploaded || new Date().toISOString(),
-        duration: 'PT2M',
-        contentUrl: `https://www.youtube.com/watch?v=${movie.yt_trailer_code}`
-      } : undefined,
-      ...(bestTorrent && {
-        video: {
-          '@type': 'VideoObject',
-          name: movie.title,
-          description: movie.description_full || `${movie.title} full movie`,
-          thumbnailUrl: movie.medium_cover_image,
-          uploadDate: movie.date_uploaded || new Date().toISOString(),
-          contentUrl: bestTorrent.url,
-          encodingFormat: 'video/mp4',
-          width: '1920',
-          height: '1080',
-          ...(movie.runtime && { duration: `PT${movie.runtime}M` })
-        }
-      })
-    };
-
-    script.text = JSON.stringify(jsonLd);
-    document.head.appendChild(script);
-    this.jsonLdScript = script;
-
-    // Also update meta tags for better sharing and SEO
-    this.updateMetaTags(movie);
+  private generateStructuredData(): void {
+    if (this.movie) {
+      this.movieSchema = this.schemaService.generateMovieSchema(
+        this.movie,
+        environment.baseSiteUrl || window.location.origin
+      );
+    }
   }
 
+  /**
+   * Remove JSON-LD script from the document head
+   */
   private removeJsonLd(): void {
-    if (this.jsonLdScript) {
-      document.head.removeChild(this.jsonLdScript);
+    if (this.jsonLdScript && this.jsonLdScript.parentNode) {
+      this.jsonLdScript.parentNode.removeChild(this.jsonLdScript);
       this.jsonLdScript = null;
     }
   }
 
-  private updateMetaTags(movie: Movie): void {
-    // Update page title
-    this.title.setTitle(`${movie.title} (${movie.year}) - Magenet online`);
+  /**
+   * Update SEO metadata for the movie page
+   */
+  private updateSeoMetadata(): void {
+    if (!this.movie) return;
 
+    const title = `${this.movie.title} (${this.movie.year}) - YTS ${this.movie.rating}⭐`;
+    const description = this.movie.description_full || this.movie.description_intro || `Watch ${this.movie.title} in HD quality.`;
+    const image = this.movie.large_cover_image || this.movie.medium_cover_image || `${environment.baseSiteUrl}/assets/default-movie.jpg`;
+    const url = `${environment.baseSiteUrl}/movie/${this.movie.id}-${this.slugify(this.movie.title || 'movie')}`;
+    
+    // Update page title
+    this.titleService.setTitle(title);
+    
     // Update meta tags
-    this.meta.updateTag({ name: 'description', content: movie.description_full || `${movie.title} - Watch or download in HD quality` });
+    this.meta.updateTag({ name: 'description', content: description });
     
     // Open Graph / Facebook
     this.meta.updateTag({ property: 'og:type', content: 'video.movie' });
-    this.meta.updateTag({ property: 'og:title', content: movie.title });
-    this.meta.updateTag({ property: 'og:description', content: movie.description_full || movie.title });
-    this.meta.updateTag({ property: 'og:image', content: movie.large_cover_image });
-    this.meta.updateTag({ property: 'og:url', content: window.location.href });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:image', content: image });
+    this.meta.updateTag({ property: 'og:url', content: url });
     
-    // Twitter Card
+    // Twitter
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.meta.updateTag({ name: 'twitter:title', content: movie.title });
-    this.meta.updateTag({ name: 'twitter:description', content: movie.description_full || movie.title });
-    this.meta.updateTag({ name: 'twitter:image', content: movie.large_cover_image });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    this.meta.updateTag({ name: 'twitter:image', content: image });
+    
+    // Additional meta tags
+    if (this.movie.genres && this.movie.genres.length > 0) {
+      this.meta.updateTag({ name: 'keywords', content: this.movie.genres.join(', ') });
+    }
+    
+    // Canonical URL
+    this.meta.updateTag({ rel: 'canonical', href: url });
+  }
+  
+  /**
+   * Convert a string to a URL-friendly slug
+   */
+  private slugify(text: string): string {
+    return text
+      .toString()
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove special characters
+      .trim()
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
   }
 
   ngOnDestroy(): void {
@@ -303,23 +289,19 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
     // Load movie details
     this.ytsApiService.getMovieDetails(movieId).subscribe({
       next: (response) => {
-        this.movie = response.data.movie;
-        this.truncateDescription();
-        // Add JSON-LD structured data
-        this.addJsonLdSchema(this.movie);
-        this.loading = false;
-        
-        // Load similar movies with the numeric ID
-        this.loadSimilarMovies(movieId);
-        
-        // Scroll to main content after content is loaded
-        this.scrollToMain();
+        if (response?.data?.movie) {
+          this.movie = response.data.movie;
+          this.updateSeoMetadata();
+          this.generateStructuredData();
+          this.loadSimilarMovies(movieId);
+          this.loading = false;
+        } else {
+          this.router.navigate(['/not-found']);
+        }
       },
-      error: (err) => {
-        console.error('Error loading movie details:', err);
-        this.error = 'Failed to load movie details. Please try again later.';
-        this.loading = false;
-        this.loadingSimilar = false;
+      error: (error) => {
+        console.error('Error loading movie details:', error);
+        this.router.navigate(['/not-found']);
       }
     });
   }
