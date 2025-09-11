@@ -1,13 +1,29 @@
 # robots.txt for Magenet - Your Movie Discovery Platform
+# https://magenet.online/
+
+# Default rule for all crawlers
 User-agent: *
+
+# Allow crawling of all pages except those specified below
 Allow: /
+
+# Disallow crawling of admin and API endpoints
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
+Disallow: /search
+
+# Disallow query strings and common file types
 Disallow: /*?*
 Disallow: /*.json$
 Disallow: /*.xml$
+Disallow: /*.js$
+Disallow: /*.css$
 
+# Sitemap location
+Sitemap: https://magenet.online/sitemap.xml
+
+# Crawl-delay: 10  # Uncomment and adjust if needed to limit crawl rate
 # Crawl-delay: 10  # Uncomment if needed to reduce server load
 
 # Sitemap
