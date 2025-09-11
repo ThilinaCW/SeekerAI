@@ -17,7 +17,8 @@ export const environment = {
   defaultPage: 1,
   defaultLimit: 20,
   defaultWithImages: true,
-  defaultWithRtRatings: false
+  defaultWithRtRatings: false,
+  baseUrl: 'http://localhost:4200'
 };
 
 /*
