@@ -10,9 +10,7 @@ import { formatDate } from '@angular/common';
 })
 export class SitemapService {
   private readonly baseUrl = environment.apiBaseUrl;
-  private readonly baseSiteUrl = environment.baseSiteUrl+'/' || 'https://magenet.online/';
-  private readonly sitemapPath = 'assets/sitemap.xml';
-  private readonly videoSitemapPath = 'assets/video-sitemap.xml';
+  private readonly baseSiteUrl = (environment.baseSiteUrl || 'https://magenet.online').replace(/\/$/, '');
   private readonly maxUrls = 50000; // Sitemap protocol limit per file
   private readonly maxSize = 50 * 1024 * 1024; // 50MB sitemap size limit
 
