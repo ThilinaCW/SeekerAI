@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit {
   }
 
   private setSeoMetadata(): void {
-    this.seoService.setTitle('SeekerAI - Find and Download Movies');
+    this.seoService.setTitle(' Magenet - Find and Download Movies');
     this.seoService.setMetaDescription('Search and download your favorite movies in high quality. Browse by genre, rating, and more.');
     this.seoService.setCanonicalUrl();
   }
