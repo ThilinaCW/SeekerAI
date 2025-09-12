@@ -4,10 +4,45 @@
 # Default rule for all crawlers
 User-agent: *
 
+# Sitemap location
+Sitemap: https://magenet.online/sitemap.xml
+
 # Allow crawling of all pages except those specified below
 Allow: /
 
 # Disallow crawling of admin and API endpoints
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /search/
+
+# Crawl-delay: 10  # Uncomment and adjust if needed to limit crawl rate
+
+# Allow all major search engine bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Image and media files
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.webp$
+Allow: /*.mp4$
+Allow: /*.webm$
+
+# CSS and JavaScript
+Allow: /*.css$
+Allow: /*.js$
+
+# Host directives
+Host: magenet.online
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
