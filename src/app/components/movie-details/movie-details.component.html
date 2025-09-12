@@ -33,7 +33,14 @@
     <div class="container">
       <div class="movie-header-content">
         <div class="movie-poster">
-          <img [src]="movie.large_cover_image" [alt]="movie.title + ' poster'" class="movie-poster-img">
+          <img 
+            [src]="movie.large_cover_image" 
+            [alt]="movie.title + ' (' + movie.year + ') - High Quality Movie Poster'" 
+            class="movie-poster-img"
+            width="342"
+            height="513"
+            loading="eager"
+          >
           <!-- <div class="movie-actions">
             <button (click)="toggleDownloadsDrawer()" class="btn-download">
               <i class="icon-download"></i> Download
@@ -132,7 +139,7 @@
               <img 
                 *ngIf="getCurrentScreenshot()" 
                 [src]="getCurrentScreenshot()" 
-                [alt]="movie.title + ' screenshot ' + (currentScreenshotIndex + 1)"
+                [alt]="movie.title + ' - Movie Screenshot ' + (currentScreenshotIndex + 1) + ' of ' + (movie.screenshots?.length || 1)"
                 class="screenshot"
               >
             </div>
@@ -149,7 +156,13 @@
               [class.active]="i === currentScreenshotIndex"
               (click)="goToScreenshot(i)"
             >
-              <img [src]="screenshot" [alt]="'Thumbnail ' + (i + 1)">
+              <img 
+                [src]="screenshot" 
+                [alt]="movie.title + ' - Screenshot Thumbnail ' + (i + 1) + ' of ' + (movie.screenshots?.length || 1)"
+                width="120"
+                height="68"
+                loading="lazy"
+              >
             </div>
           </div>
         </div>
@@ -192,8 +205,10 @@
               <div class="cast-image-container">
                 <img 
                   [src]="person.url_small_image || 'assets/placeholder-avatar.png'" 
-                  [alt]="person.name + ' as ' + person.character_name"
+                  [alt]="person.name + ' as ' + person.character_name + ' in ' + movie.title"
                   [attr.loading]="i < 6 ? 'eager' : 'lazy'"
+                  width="80"
+                  height="120"
                   [attr.fetchpriority]="i < 3 ? 'high' : 'auto'"
                   width="138"
                   height="175"
@@ -218,7 +233,14 @@
             <div class="similar-movies-scroll">
               <div class="similar-movie-card" *ngFor="let similarMovie of similarMovies" (click)="navigateToMovie(similarMovie)">
                 <div class="similar-movie-poster">
-                  <img [src]="similarMovie.medium_cover_image" [alt]="similarMovie.title + ' poster'" class="similar-movie-img">
+                  <img 
+                    [src]="similarMovie.medium_cover_image" 
+                    [alt]="'Similar to ' + movie.title + ': ' + similarMovie.title + ' (' + similarMovie.year + ')'" 
+                    class="similar-movie-img"
+                    width="154"
+                    height="231"
+                    loading="lazy"
+                  >
                   <div class="similar-movie-overlay">
                     <div class="similar-movie-rating" *ngIf="similarMovie.rating">
                       <span class="rating-value">{{ similarMovie.rating | number:'1.1-1' }}</span>
