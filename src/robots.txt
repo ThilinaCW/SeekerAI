@@ -1,0 +1,44 @@
+# robots.txt for Magenet - Your Movie Discovery Platform
+# https://magenet.online/
+
+# Default rule for all crawlers
+User-agent: *
+
+# Sitemap location (only one instance needed)
+Sitemap: https://magenet.online/sitemap.xml
+
+# Allow crawling of all pages except those specified below
+Allow: /
+
+# Disallow crawling of admin and API endpoints
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /search/
+Disallow: /cgi-bin/
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+
+# File type directives
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.webp$
+Allow: /*.svg$
+Allow: /*.mp4$
+Allow: /*.webm$
+
+# Disallow query strings and specific file types
+Disallow: /*?*
+Disallow: /*.json$
+Disallow: /*.xml$
+
+# Crawl budget optimization
+# Request-rate: 1/5  # 1 page every 5 seconds (uncomment if needed)
+# Crawl-delay: 10    # Uncomment and adjust if needed to limit crawl rate
+
+# Host directive (for Yandex)
+Host: magenet.online

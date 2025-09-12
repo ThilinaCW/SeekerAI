@@ -24,7 +24,7 @@
               "src/favicon.ico",
               "src/assets",
               { "glob": "sitemap.xml", "input": "src", "output": "/" },
-              { "glob": "robots.txt", "input": "src/assets", "output": "/" }
+              { "glob": "robots.txt", "input": "src", "output": "/" }
             ],
             "styles": [
               "src/styles.css"
@@ -174,7 +174,7 @@
               "src/favicon.ico",
               "src/assets",
               { "glob": "sitemap.xml", "input": "src", "output": "/" },
-              { "glob": "robots.txt", "input": "src/assets", "output": "/" }
+              { "glob": "robots.txt", "input": "src", "output": "/" }
             ],
             "styles": [
               "src/styles.css"
