@@ -45,6 +45,31 @@
   box-shadow: 0 2px 8px rgba(76, 201, 240, 0.4);
 }
 
+.section-heading {
+  color: #e0e0e0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 2rem 0;
+  padding-bottom: 0.5rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.section-heading::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #4cc9f0, #a162e8);
+  opacity: 0.8;
+}
+
 @media (max-width: 768px) {
   .main-heading {
     font-size: 2rem;
