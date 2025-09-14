@@ -1,13 +1,10 @@
-import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app-routing.module';
 import { provideHttpClient } from '@angular/common/http';
-import { provideClientHydration } from '@angular/platform-browser';
 
-export const appConfig: ApplicationConfig = {
+export const appConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(),
-    provideClientHydration()
+    provideHttpClient()
   ]
 };
