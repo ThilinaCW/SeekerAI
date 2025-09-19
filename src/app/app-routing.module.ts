@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 
-// Export the routes array so it can be used in main.ts
 export const routes: Routes = [
   { 
     path: 'movie/:id', 
@@ -25,7 +24,18 @@ export const routes: Routes = [
   { 
     path: '',
     loadComponent: () => import('./components/home/home.component')
-      .then(m => m.HomeComponent)
+      .then(m => m.HomeComponent),
+    pathMatch: 'full'
   },
-  { path: '**', redirectTo: '' } // Default route
+  // 404 - Not Found Route (must be the last route)
+  { 
+    path: '404',
+    loadComponent: () => import('./components/not-found/not-found.component')
+      .then(m => m.NotFoundComponent)
+  },
+  // Redirect all other routes to 404
+  { 
+    path: '**',
+    redirectTo: '/404'
+  }
 ];
