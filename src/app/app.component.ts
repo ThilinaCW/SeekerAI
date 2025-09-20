@@ -39,13 +39,11 @@ export class AppComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll')
   checkScrollPosition() {
     const scrollPosition = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    this.showBackToTop = !this.isDrawerOpen && scrollPosition > 300; // Show button after scrolling 300px
-    console.log('Scroll position:', scrollPosition, 'Show button:', this.showBackToTop);
+    this.showBackToTop = !this.isDrawerOpen && scrollPosition > 300; 
   }
 
   // For debugging
   ngAfterViewInit() {
-    console.log('AppComponent initialized, checking initial scroll position');
     this.checkScrollPosition();
   }
 
