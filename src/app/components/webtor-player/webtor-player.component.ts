@@ -16,6 +16,7 @@ export class WebtorPlayerComponent implements OnInit, OnDestroy, OnChanges {
   @Input() autoplay: boolean = false;
 
   @ViewChild('playerContainer', { static: true }) playerContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('wrapper', { static: true }) wrapper!: ElementRef<HTMLDivElement>;
 
   private sdkLoaded = false;
   private scriptEl?: HTMLScriptElement;
@@ -172,6 +173,16 @@ export class WebtorPlayerComponent implements OnInit, OnDestroy, OnChanges {
         try {
           iframe.setAttribute('width', '100%');
           iframe.setAttribute('height', '100%');
+          // Ensure fullscreen is allowed on mobile browsers
+          iframe.setAttribute('allowfullscreen', '');
+          iframe.setAttribute('webkitallowfullscreen', '');
+          iframe.setAttribute('mozallowfullscreen', '');
+          // Permissions Policy for modern browsers (includes fullscreen and PiP)
+          const allowExisting = iframe.getAttribute('allow') || '';
+          const needed = 'fullscreen; picture-in-picture; encrypted-media; autoplay;';
+          if (!allowExisting.includes('fullscreen')) {
+            iframe.setAttribute('allow', `${allowExisting} ${needed}`.trim());
+          }
           // Also ensure inline style as a last resort
           const style = iframe.getAttribute('style') || '';
           if (!/width\s*:\s*100%/.test(style)) iframe.style.width = '100%';
@@ -183,17 +194,82 @@ export class WebtorPlayerComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     // Try immediately
-    if (apply()) return;
+    apply();
 
-    // Observe for iframe additions for a short window
+    // Observe for iframe additions/changes and keep applying attributes
     const observer = new MutationObserver(() => {
-      if (apply()) {
-        observer.disconnect();
-      }
+      apply();
     });
     observer.observe(container, { childList: true, subtree: true });
 
-    // Safety timeout to disconnect after 5s
-    setTimeout(() => observer.disconnect(), 5000);
+    // Safety timeout to disconnect after 60s (handles SDK re-injections)
+    setTimeout(() => observer.disconnect(), 60000);
+  }
+
+  // Fallback: allow user to enter/exit fullscreen for the container element
+  enterFullscreen(): void {
+    const container: any = this.playerContainer?.nativeElement;
+    if (!container) return;
+    // Prefer requesting fullscreen on the iframe itself for better mobile support
+    const iframe: any = container.querySelector('iframe');
+    const target: any = iframe || container;
+    const req = target?.requestFullscreen || target?.webkitRequestFullscreen || target?.msRequestFullscreen || target?.mozRequestFullScreen;
+    if (req) {
+      try {
+        req.call(target);
+        // After a short delay, verify if fullscreen engaged; otherwise, use immersive fallback
+        setTimeout(() => {
+          if (!(document as any).fullscreenElement && !(document as any).webkitFullscreenElement) {
+            this.enableImmersive();
+          }
+        }, 250);
+        return;
+      } catch {}
+    }
+    // Fallback to container if iframe call failed
+    if (target !== container) {
+      const req2 = container.requestFullscreen || (container as any).webkitRequestFullscreen || (container as any).msRequestFullscreen || (container as any).mozRequestFullScreen;
+      try {
+        req2?.call(container);
+        setTimeout(() => {
+          if (!(document as any).fullscreenElement && !(document as any).webkitFullscreenElement) {
+            this.enableImmersive();
+          }
+        }, 250);
+      } catch {
+        this.enableImmersive();
+      }
+    }
+  }
+
+  exitFullscreen(): void {
+    const d: any = document as any;
+    const exit = document.exitFullscreen || d.webkitExitFullscreen || d.msExitFullscreen || d.mozCancelFullScreen;
+    if (exit) {
+      try { exit.call(document); } catch {}
+    }
+    this.disableImmersive();
+  }
+
+  toggleFullscreen(): void {
+    if (document.fullscreenElement) {
+      this.exitFullscreen();
+    } else {
+      this.enterFullscreen();
+    }
+  }
+
+  private enableImmersive(): void {
+    try {
+      document.body.classList.add('no-scroll');
+      this.wrapper?.nativeElement.classList.add('immersive-active');
+    } catch {}
+  }
+
+  private disableImmersive(): void {
+    try {
+      document.body.classList.remove('no-scroll');
+      this.wrapper?.nativeElement.classList.remove('immersive-active');
+    } catch {}
   }
 }
