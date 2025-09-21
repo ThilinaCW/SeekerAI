@@ -111,6 +111,24 @@
     <div class="movie-content">
       <!-- Left Column -->
       <div class="left-column">
+        <!-- Watch Online Section (Webtor) -->
+        <div class="watch-online-section" *ngIf="hasEligibleStreams()">
+          <h2>Watch Online</h2>
+          <div class="stream-controls">
+            <label for="stream-quality">Choose quality:</label>
+            <select id="stream-quality" [(ngModel)]="selectedTorrentHash" (ngModelChange)="onSelectTorrent($event)">
+              <option *ngFor="let t of getSortedTorrents()" [value]="t.hash">
+                {{ t.quality }}{{ t.type ? ' ' + t.type : '' }} • {{ t.size }} • {{ t.seeds }} seeds
+              </option>
+            </select>
+          </div>
+          <app-webtor-player
+            *ngIf="selectedTorrentHash"
+            [infoHash]="selectedTorrentHash || undefined"
+            [title]="movie.title"
+            [autoplay]="false">
+          </app-webtor-player>
+        </div>
         
         <!-- Trailer Section -->
         <div class="trailer-section" *ngIf="movie.yt_trailer_code">

@@ -1,0 +1,96 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.webtor-player-wrapper {
+  width: 100%;
+  background: #0f1117;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: center; /* center the container horizontally */
+}
+
+.webtor-player-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 fallback */
+  height: 0; /* fallback when aspect-ratio not supported */
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 auto; /* ensure centered when width < wrapper */
+}
+
+/* Ensure injected iframe fully fills the container */
+.webtor-player-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  display: block;
+}
+
+/* Some SDK versions wrap iframe with one or more divs; ensure they stretch */
+.webtor-player-container > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.webtor-player-container > div > div,
+.webtor-player-container > div > iframe {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Fallback: blanket rule to ensure any nested wrappers/iframes from SDK fill the container */
+.webtor-player-container *:is(div, iframe) {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Prefer modern aspect-ratio when available (removes padding-bottom hack) */
+@supports (aspect-ratio: 16 / 9) {
+  .webtor-player-container {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    padding-bottom: 0;
+  }
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .webtor-player-wrapper {
+    padding-left: 12px;
+    padding-right: 12px; /* subtle horizontal padding */
+  }
+  .webtor-player-container {
+    max-height: 65vh; /* prevent player from exceeding viewport height */
+  }
+}
+
+/* Very small landscape screens */
+@media (orientation: landscape) and (max-height: 500px) {
+  .webtor-player-container {
+    max-height: 80vh;
+  }
+}
+
+.player-hint {
+  padding: 12px 16px;
+  color: #bbb;
+  font-size: 14px;
+}
