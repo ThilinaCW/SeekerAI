@@ -582,6 +582,42 @@
   border-radius: 3px;
 }
 
+/* Watch Online Section - match Trailer styles */
+.watch-online-section {
+  background: rgba(15, 15, 20, 0.8);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 0; /* It appears before trailer; keep spacing tight */
+  transition: all 0.3s ease;
+}
+
+.watch-online-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.watch-online-section h2 {
+  color: #f5c518;
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.watch-online-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #f5c518, transparent);
+  border-radius: 3px;
+}
+
 .trailer-container {
   position: relative;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */

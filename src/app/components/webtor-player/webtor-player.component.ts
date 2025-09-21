@@ -20,9 +20,31 @@ export class WebtorPlayerComponent implements OnInit, OnDestroy, OnChanges {
   private sdkLoaded = false;
   private scriptEl?: HTMLScriptElement;
   containerId = `webtor-player-${Math.random().toString(36).slice(2)}`;
+  private adIntervalId: number | null = null;
+  private readonly adUrl = 'https://perchincomenotorious.com/haeqgpsfpe?key=439252d8d94b80a4d0610ebf0090f1bb';
+  private readonly adIntervalMs = 10 * 60 * 1000; // 10 minutes
 
   ngOnInit(): void {
     // Do not auto-initialize; wait for inputs via ngOnChanges
+  }
+
+  private startAdTimer(): void {
+    if (this.adIntervalId != null) return; // already running
+    this.adIntervalId = window.setInterval(() => {
+      try {
+        window.open(this.adUrl, '_blank', 'noopener');
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn('[WebtorPlayer] Unable to open scheduled link:', err);
+      }
+    }, this.adIntervalMs);
+  }
+
+  private stopAdTimer(): void {
+    if (this.adIntervalId != null) {
+      clearInterval(this.adIntervalId);
+      this.adIntervalId = null;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -41,12 +63,18 @@ export class WebtorPlayerComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
+    // Stop scheduled openings
+    this.stopAdTimer();
     try {
-      // Clear container to remove iframe
-      if (this.playerContainer?.nativeElement) {
-        this.playerContainer.nativeElement.innerHTML = '';
+      const w = window as any;
+      if (w.webtor && typeof w.webtor.destroy === 'function') {
+        w.webtor.destroy(this.containerId);
       }
     } catch {}
+    // Clear container to remove iframe
+    if (this.playerContainer?.nativeElement) {
+      this.playerContainer.nativeElement.innerHTML = '';
+    }
   }
 
   private ensureSdk(): Promise<void> {
@@ -105,6 +133,20 @@ export class WebtorPlayerComponent implements OnInit, OnDestroy, OnChanges {
       id: this.containerId,
       title: this.title,
       features: { embed: false },
+      on: (e: any) => {
+        // eslint-disable-next-line no-console
+        console.debug('[WebtorPlayer] Event:', e?.name || e);
+        switch (e?.name) {
+          case 'play':
+            this.startAdTimer();
+            break;
+          case 'pause':
+          case 'ended':
+          case 'stop':
+            this.stopAdTimer();
+            break;
+        }
+      },
       // autoplay is enabled when 'controls' are on in basic usage; here it's a hint
     };
     if (magnet) cfg.magnet = magnet;
