@@ -15,6 +15,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { JsonLdComponent } from '../shared/json-ld.component';
 import { SchemaService } from '../../services/schema.service';
 import { environment } from '../../../environments/environment';
+import { WebtorPlayerComponent } from '../webtor-player/webtor-player.component';
 
 @Component({
   selector: 'app-movie-details',
@@ -29,7 +30,8 @@ import { environment } from '../../../environments/environment';
     SafeHtmlPipe,
     MovieListComponent,
     LanguagePipe,
-    JsonLdComponent
+    JsonLdComponent,
+    WebtorPlayerComponent
   ],
   animations: [
     trigger('fadeIn', [
@@ -72,6 +74,9 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
   isDownloadsDrawerOpen = false;
   searchKeyword = '';
   showSearchResults = false;
+  selectedTorrentHash: string | null = null; // currently selected/playing
+  // Minimum seeds required to consider a torrent eligible for streaming
+  private readonly minSeedsForStream = 5;
   
   // Screenshot slideshow properties
   currentScreenshotIndex = 0;
@@ -100,12 +105,13 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Handle navigation end to update structured data when navigating between movie details
+    // Handle navigation end to update structured data and SEO when navigating between movie details
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       if (this.movie) {
         this.generateStructuredData();
+        this.updateSeoMetadata();
       }
     });
   }
@@ -134,38 +140,58 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
    */
   private updateSeoMetadata(): void {
     if (!this.movie) return;
+    const hasStreams = this.hasEligibleStreams();
+    const movieTitle = this.movie.title || 'Movie';
+    const year = this.movie.year ? ` (${this.movie.year})` : '';
+    const ratingStar = this.movie.rating ? ` ${this.movie.rating.toFixed(1)}⭐` : '';
+    const baseTitle = `${movieTitle}${year}`;
 
-    const title = `${this.movie.title} (${this.movie.year}) - YTS ${this.movie.rating}⭐`;
-    const description = this.movie.description_full || this.movie.description_intro || `Watch ${this.movie.title} in HD quality.`;
+    // SEO Title: prefer streaming-focused when streams available
+    const title = hasStreams
+      ? `${baseTitle} – Watch Online Free | Magenet${ratingStar}`
+      : `${baseTitle} – Details, Screenshots & Torrents | Magenet${ratingStar}`;
+
+    // Description: concise, keyword-rich, unique
+    const genreList = Array.isArray(this.movie.genres) ? this.movie.genres.join(', ') : '';
+    const descFromApi = this.movie.description_full || this.movie.description_intro || '';
+    const trimmed = descFromApi ? ` ${descFromApi.substring(0, 160)}${descFromApi.length > 160 ? '…' : ''}` : '';
+    const description = hasStreams
+      ? `Stream ${movieTitle}${year} online in HD. Genres: ${genreList}. Find the best available torrent streams with healthy seeders on Magenet.` + trimmed
+      : `Explore ${movieTitle}${year} with synopsis, screenshots, and torrent details. Genres: ${genreList}. Find similar movies on Magenet.` + trimmed;
+
     const image = this.movie.large_cover_image || this.movie.medium_cover_image || `${environment.baseSiteUrl}/assets/default-movie.jpg`;
-    const url = `${environment.baseSiteUrl}/movie/${this.movie.id}-${this.slugify(this.movie.title || 'movie')}`;
-    
+    const url = `${environment.baseSiteUrl}/movie/${this.movie.id}-${this.slugify(movieTitle)}`;
+
     // Update page title
     this.titleService.setTitle(title);
-    
+
+    // Robots
+    this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+
     // Update meta tags
     this.meta.updateTag({ name: 'description', content: description });
-    
+
     // Open Graph / Facebook
     this.meta.updateTag({ property: 'og:type', content: 'video.movie' });
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
     this.meta.updateTag({ property: 'og:image', content: image });
     this.meta.updateTag({ property: 'og:url', content: url });
-    
+
     // Twitter
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: title });
     this.meta.updateTag({ name: 'twitter:description', content: description });
     this.meta.updateTag({ name: 'twitter:image', content: image });
-    
+
     // Additional meta tags
-    if (this.movie.genres && this.movie.genres.length > 0) {
-      this.meta.updateTag({ name: 'keywords', content: this.movie.genres.join(', ') });
-    }
-    
-    // Canonical URL
-    this.meta.updateTag({ rel: 'canonical', href: url });
+    const keywords = [movieTitle, String(this.movie.year || ''), 'watch online', 'stream', 'torrent', ...((this.movie.genres || []) as string[])]
+      .filter(Boolean)
+      .join(', ');
+    this.meta.updateTag({ name: 'keywords', content: keywords });
+
+    // Canonical URL using a link element
+    this.setCanonicalUrl(url);
   }
   
   /**
@@ -179,6 +205,19 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
       .trim()
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
+  }
+
+  /**
+   * Ensure a single canonical link exists and points to the provided URL
+   */
+  private setCanonicalUrl(url: string): void {
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    if (!link) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      document.head.appendChild(link);
+    }
+    link.setAttribute('href', url);
   }
 
   ngOnDestroy(): void {
@@ -293,6 +332,9 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
           this.movie = response.data.movie;
           this.updateSeoMetadata();
           this.generateStructuredData();
+          // Auto-select the highest seed eligible torrent by default
+          const bestEligible = this.getBestEligibleTorrentHash();
+          this.selectedTorrentHash = bestEligible;
           this.loadSimilarMovies(movieId);
           this.loading = false;
         } else {
@@ -406,6 +448,59 @@ export class MovieDetailsComponent implements OnInit, OnDestroy {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  /**
+   * Return the best torrent to stream, preferring the one with most seeds
+   */
+  getBestTorrent(): Torrent | null {
+    if (!this.movie || !this.movie.torrents || this.movie.torrents.length === 0) return null;
+    // Choose torrent with maximum seeds as a heuristic for availability
+    return this.movie.torrents.reduce((best: Torrent, current: Torrent) => {
+      return (best && best.seeds >= current.seeds) ? best : current;
+    });
+  }
+
+  /**
+   * Convenience getter for best torrent info hash
+   */
+  getBestTorrentHash(): string | null {
+    const t = this.getBestTorrent();
+    return t?.hash || null;
+  }
+
+  /**
+   * Sorted torrents (by seeds desc), safe for template iteration
+   */
+  getSortedTorrents(): Torrent[] {
+    // Backward-compat method name used by template; now returns only eligible torrents sorted by seeds desc
+    return this.getEligibleTorrents();
+  }
+
+  /** Return torrents that meet minimum seeds requirement, sorted by seeds desc */
+  getEligibleTorrents(): Torrent[] {
+    const list = this.movie?.torrents ? [...this.movie.torrents] : [] as Torrent[];
+    return list
+      .filter(t => (t?.seeds ?? 0) >= this.minSeedsForStream)
+      .sort((a, b) => (b.seeds || 0) - (a.seeds || 0));
+  }
+
+  /** Best eligible torrent hash or null if none */
+  getBestEligibleTorrentHash(): string | null {
+    const eligible = this.getEligibleTorrents();
+    return eligible.length ? eligible[0].hash : null;
+  }
+
+  /** Whether there are any eligible streams */
+  hasEligibleStreams(): boolean {
+    return this.getEligibleTorrents().length > 0;
+  }
+
+  /**
+   * Handle torrent selection from UI (applies immediately)
+   */
+  onSelectTorrent(hash: string): void {
+    this.selectedTorrentHash = hash || this.getBestTorrentHash();
   }
 
   /**

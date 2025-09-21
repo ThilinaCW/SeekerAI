@@ -20,7 +20,7 @@
       </div>
       <img 
         [src]="movie.medium_cover_image" 
-        [alt]="'Download ' + movie.title + ' (' + movie.year + ') in HD - ' + (movie.genres ? movie.genres[0] : 'Movie') + ' Film'"
+        [alt]="'Download and Stream ' + movie.title + ' (' + movie.year + ') in HD - ' + (movie.genres ? movie.genres[0] : 'Movie') + ' Film'"
         [attr.loading]="'lazy'"
         [attr.fetchpriority]="i < 3 ? 'high' : 'auto'"
         width="210"
