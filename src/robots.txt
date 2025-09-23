@@ -41,4 +41,4 @@ Disallow: /*.xml$
 # Crawl-delay: 10    # Uncomment and adjust if needed to limit crawl rate
 
 # Host directive (for Yandex)
-Host: magenet.online
+# Host: magenet.online
