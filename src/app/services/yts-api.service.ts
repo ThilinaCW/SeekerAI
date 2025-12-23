@@ -8,7 +8,7 @@ import { Movie, MovieListResponse } from '../models/movie.model';
   providedIn: 'root'
 })
 export class YtsApiService {
-  private readonly baseUrl = 'https://yts.mx/api/v2';
+  private readonly baseUrl = 'https://yts.lt/api/v2';
 
   constructor(private http: HttpClient) {}
 

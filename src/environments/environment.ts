@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   // Add other environment-specific settings here
-  apiUrl: 'https://yts.mx/api/v2',
-  apiBaseUrl: 'https://yts.mx/api/v2',
+  apiUrl: 'https://yts.lt/api/v2',//'https://yts.mx/api/v2',
+  apiBaseUrl: 'https://yts.lt/api/v2',//'https://yts.mx/api/v2',
   baseSiteUrl: 'http://localhost:4200', // Local development URL
   defaultLanguage: 'en',
   defaultQuality: 'all',
