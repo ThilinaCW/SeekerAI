@@ -1,6 +1,6 @@
 {
   "/api/v2": {
-    "target": "https://yts.mx",
+    "target": "https://yts.lt",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
